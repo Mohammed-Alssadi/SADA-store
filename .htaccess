@@ -1,0 +1,5 @@
+# Enable errors
+Options -Indexes
+
+# Custom 404 Page
+ErrorDocument 404 /electro-store/404.php
