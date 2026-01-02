@@ -1,13 +1,13 @@
 <?php
-require_once "include/db_connect.php";
-// echo "Connected successfully";
+    require_once "include/db_connect.php";
+    // echo "Connected successfully";
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title> SADA-electro - Electronics Store</title>
+    <title> SADA-electro </title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -25,18 +25,18 @@ require_once "include/db_connect.php";
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Libraries Stylesheet -->
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+     <!-- Libraries Stylesheet -->
+     <link href="assets/lib/animate/animate.min.css" rel="stylesheet">
+     <link href="assets/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
 
 
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+     <!-- Customized Bootstrap Stylesheet -->
+     <link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Template Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
-       <link href="css/product-card.css" rel="stylesheet">
-       <link href="css/category-section.css" rel="stylesheet">
+     <!-- Template Stylesheet -->
+     <link href="assets/css/style.css" rel="stylesheet">
+         <link href="assets/css/product-card.css" rel="stylesheet">
+         <link href="assets/css/category-section.css" rel="stylesheet">
 </head>
 
 <body>
@@ -190,8 +190,8 @@ require_once "include/db_connect.php";
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-3 shadow-lg ">
 
-     
-        
+
+
 
 
             <div class="modal-body p-4 p-md-5">
