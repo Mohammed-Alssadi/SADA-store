@@ -1,10 +1,7 @@
 <?php
 session_start();
-
-
-include 'include/template/Header.php';
-
-
+require 'vendor/autoload.php'; 
+require 'include/functions.php';    
 $errors        = [];
 $profile_image = 'user.png'; 
 $success       = false;
@@ -80,8 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   
     if (empty($errors)) {
         $success = true;
-
- 
         if (! empty($_FILES['profile_image']['name'])) {
             // التأكد من وجود المجلد
             if (! is_dir('uploads/users')) {
@@ -91,23 +86,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $profile_image = time() . '_' . basename($_FILES['profile_image']['name']);
             if (! move_uploaded_file($_FILES['profile_image']['tmp_name'], 'uploads/users/' . $profile_image)) {
                 $errors['profile_image'] = 'Failed to upload image';
-                $success                 = false;
+                $success = false;
             }
         }
 
-        $db_username = $username;
-        $db_fullname = $fullname;
-        $db_email    = $email;
-        $db_password = password_hash($password, PASSWORD_DEFAULT); // تشفير كلمة المرور
-        $db_country  = $country;
-        $db_image    = $profile_image;
+            if($success){
+            $otp = rand(100000, 999999);
+             $_SESSION['register'] = [
+            'username'      => $username,
+            'fullname'      => $fullname,
+            'email'         => $email,
+            'password'      => $password,   
+            'country'       => $country,
+            'profile_image' => $profile_image,
+            'otp'           => $otp,
+            'time'          => time(),
+        ];
+        if (sendOTP($email, $otp)) {
+            header('Location: verify.php');
+            exit;
+        } else {
+            $errors['email'] = 'Failed to send verification email';
+            $success = false;
+        }
+  
+}
+    
 
-    
-        // $stmt = $pdo->prepare("INSERT INTO users (username, fullname, email, password, country, profile_image) VALUES (?, ?, ?, ?, ?, ?)");
-        // $stmt->execute([$db_username, $db_fullname, $db_email, $db_password, $db_country, $db_image]);
-    
     }
 }
+include 'include/template/Header.php';
 ?>
 
 
@@ -152,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         value="<?php echo htmlspecialchars($_POST['username'] ?? '') ?>">
                 </div>
                 <?php if (isset($errors['username'])): ?>
-                    <div class="alert alert-danger p-2 mt-1 small">
+                    <div class="alert alert-danger p-1 mt-1 small">
                         <?php echo $errors['username'] ?>
                     </div>
                 <?php endif; ?>
