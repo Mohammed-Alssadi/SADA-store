@@ -328,7 +328,7 @@
 
 
  <!-- Product List Start -->
- <div class="container-fluid product  px-5">
+ <div class="container product  py-5 mb-5">
      <div class="px-1">
 
          <!-- Title -->
@@ -339,8 +339,9 @@
          </div>
          <!-- Carousel -->
          <div class="owl-carousel owl-theme product-carousel  py-2">
-            <?php foreach ($products as $product) : ?>
-             <div class="item px-3 py-2">
+             <?php foreach ($products as $product) : ?>
+             <div class="item ">
+               
                  <div class="product-card shadow  wow fadeInRight" data-wow-delay="0.1s">
                      <!-- Image -->
                      <div class="product-image-wrapper">
@@ -369,8 +370,6 @@
                              <i class="fas fa-eye "></i>
                          </a>
                      </div>
-
-
                  </div>
                  
                  <!-- END PRODUCT CARD -->
@@ -386,61 +385,7 @@
  <!-- Product List End -->
 
 
- <!-- Bestseller Products Start -->
- <div class="container-fluid products pt-5">
-     <div class="container products-mini py-5">
-         <div class="mx-auto text-center mb-5" style="max-width: 700px;">
-             <h4 class="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius wow fadeInUp"
-                 data-wow-delay="0.1s">Bestseller Products</h4>
-             <p class="mb-0 wow fadeInUp" data-wow-delay="0.2s">Lorem ipsum dolor sit amet consectetur adipisicing
-                 elit. Modi, asperiores ducimus sint quos tempore officia similique quia? Libero, pariatur
-                 consectetur?</p>
-         </div>
-         <div class="row g-4">
-            <?php foreach ($products as $product): ?>
-             <div class="col-md-6 col-lg-6 col-xl-3 wow fadeInRight" data-wow-delay="0.1s">
-                <div class="product-card shadow">
-                     <!-- Image -->
-                     <div class="product-image-wrapper">
-                         <img src="<?php echo $product['image1']; ?>" alt="Product" class="product-image">
-                     </div>
 
-                     <!-- Content -->
-                     <div class="product-content text-center ">
-                         <small class="product-category"><?php echo $product['category_name']; ?></small>
-                         <h6 class="product-title mt-2"><?php echo $product['product_name']; ?></h6>
-
-                         <div class="product-price ">
-                             <span> $<?php echo $product['price']; ?></span>
-                         </div>
-                     </div>
-
-                     <!-- Actions -->
-                     <div class="product-actions mb-">
-                         <a href="#" class="btn cart-btn btn-sm">
-
-                             <span class="me-1"> Add to Cart </span>
-                             <i class="fas fa-cart-plus"></i>
-                         </a>
-
-                         <a href="#" class="btn btn-outline-primary btn-sm">
-                             <span class="me-1 "> preview</span>
-                             <i class="fas fa-eye "></i>
-                         </a>
-                     </div>
-
-
-                 </div>
-
-                 <!-- END PRODUCT CARD -->
-
-             </div>
-                <?php endforeach; ?>
-
-         </div>
-     </div>
- </div>
- <!-- Bestseller Products End -->
 
 
 

@@ -43,59 +43,57 @@
   });
 
   // ProductList carousel
-$(".product-carousel").each(function() {
-  var $this = $(this);
-  var totalItems = $this.find(".item").length;
+  $(".product-carousel").each(function () {
+    var $this = $(this);
+    var totalItems = $this.find(".item").length;
 
-  $this.owlCarousel({
-    autoplay: true,
-    smartSpeed: 2000,
-    dots: true,
-    loop: totalItems > 1, 
-    margin: 25,
-    items: totalItems < 4 ? totalItems : 4,
-    nav: totalItems > 1,
-    navText: [
-      '<i class="fas fa-chevron-left"></i>',
-      '<i class="fas fa-chevron-right"></i>',
-    ],
-    responsive: {
-      0: { items: 1 },
-      576: { items: 1 },
-      768: { items: totalItems < 2 ? totalItems : 2 },
-      992: { items: totalItems < 3 ? totalItems : 3 },
-      1200: { items: totalItems < 4 ? totalItems : 5 },
-    },
+    $this.owlCarousel({
+      autoplay: true,
+      smartSpeed: 2000,
+      dots: true,
+      loop: totalItems > 1,
+      margin: 25,
+      items: totalItems < 4 ? totalItems : 4,
+      nav: true,
+      navText: [
+        '<i class="fas fa-chevron-left"></i>',
+        '<i class="fas fa-chevron-right"></i>',
+      ],
+      responsive: {
+        0: { items: 1 },
+        576: { items: 1 },
+        768: { items: totalItems < 2 ? totalItems : 2 },
+        992: { items: totalItems < 3 ? totalItems : 3 },
+        1200: { items: totalItems < 4 ? totalItems :4 },
+      },
+    });
   });
-});
 
-$(".category-carousel").each(function() {
-  var $this = $(this);
-  var totalItems = $this.find(".item").length;
+  $(".category-carousel").each(function () {
+    var $this = $(this);
+    var totalItems = $this.find(".item").length;
 
-  $this.owlCarousel({
-    autoplay: true,
-    smartSpeed: 2000,
-    dots: true,
-    loop: totalItems > 1, 
-    margin: 25,
-    items: totalItems < 4 ? totalItems : 4,
-    nav: totalItems > 1,
-    navText: [
-      '<i class="fas fa-chevron-left"></i>',
-      '<i class="fas fa-chevron-right"></i>',
-    ],
-    responsive: {
-      0: { items: 1 },
-      576: { items: 1 },
-      768: { items: totalItems < 2 ? totalItems : 2 },
-      992: { items: totalItems < 3 ? totalItems : 3 },
-      1200: { items: totalItems < 4 ? totalItems : 4 },
-    },
+    $this.owlCarousel({
+      autoplay: true,
+      smartSpeed: 2000,
+      dots: true,
+      loop: totalItems > 1,
+      margin: 25,
+      items: totalItems < 4 ? totalItems : 4,
+      nav: true,
+      navText: [
+        '<i class="bi bi-arrow-left"></i>',
+        '<i class="bi bi-arrow-right"></i>',
+      ],
+      responsive: {
+        0: { items: 1 },
+        576: { items: 1 },
+        768: { items: totalItems < 2 ? totalItems : 2 },
+        992: { items: totalItems < 3 ? totalItems : 3 },
+        1200: { items: totalItems < 4 ? totalItems : 4 },
+      },
+    });
   });
-});
-
-
 
   // ProductList categories carousel
   $(".productImg-carousel").owlCarousel({
@@ -112,7 +110,6 @@ $(".category-carousel").each(function() {
     ],
   });
 
-
   // Single Products carousel
   $(".single-carousel").owlCarousel({
     autoplay: true,
@@ -127,9 +124,6 @@ $(".category-carousel").each(function() {
       '<i class="bi bi-arrow-right"></i>',
     ],
   });
-
-
-
 
   // ProductList carousel
   $(".related-carousel").owlCarousel({
