@@ -1,80 +1,73 @@
 <?php
-session_start();
-require 'vendor/autoload.php';
-require 'include/functions.php';
+    session_start();
+    require 'vendor/autoload.php';
+    require 'include/functions.php';
 
-if (!isset($_SESSION['register'])) {
-    header("Location: register.php");
-    exit;
-}
-
-$error      = '';
-$info       = '';
-$verified   = false;
-$showForm   = true;
-$showResend = false;
-$redirect   = false;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    //    زر إعادة إرسال الكود
-    if (isset($_POST['resend'])) {
-        $newOtp = rand(100000, 999999);
-        $_SESSION['register']['otp']  = $newOtp;
-        $_SESSION['register']['time'] = time();
-
-        sendOTP($_SESSION['register']['email'], $newOtp);
-
-        $info = "A new verification code has been sent to your email.";
-       
-     $showForm = true;
-      $showResend = false;
+    if (! isset($_SESSION['register'])) {
+        header("Location: register.php");
+        exit;
     }
 
+    $error      = '';
+    $info       = '';
+    $verified   = false;
+    $showForm   = true;
+    $showResend = false;
+    $redirect   = false;
 
-    //    زر التحقق من الكود
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    elseif (isset($_POST['verify'])) {
-        $user_otp = trim($_POST['otp']);
-        $real_otp = $_SESSION['register']['otp'];
+        //    زر إعادة إرسال الكود
+        if (isset($_POST['resend'])) {
+            $newOtp                       = rand(100000, 999999);
+            $_SESSION['register']['otp']  = $newOtp;
+            $_SESSION['register']['time'] = time();
 
-        // انتهاء الصلاحية (5 دقائق)
-        if (time() - $_SESSION['register']['time'] > 300) {
-        
-          $error = "Verification code expired.";
-  $showForm = false;
-  $showResend = true;
-        } elseif ($user_otp == $real_otp) {
+            sendOTP($_SESSION['register']['email'], $newOtp);
 
+            $info = "A new verification code has been sent to your email.";
 
-            // حفظ البيانات في DB
+            $showForm   = true;
+            $showResend = false;
+        }
 
-            $data = $_SESSION['register'];
+        //    زر التحقق من الكود
 
-            /*
-            $stmt = $pdo->prepare("
-                INSERT INTO users 
-                (username, fullname, email, password, country, profile_image)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
+        elseif (isset($_POST['verify'])) {
+            $user_otp = trim($_POST['otp']);
+            $real_otp = $_SESSION['register']['otp'];
 
-            $stmt->execute([
-                $data['username'],
-                $data['fullname'],
-                $data['email'],
-                password_hash($data['password'], PASSWORD_DEFAULT),
-                $data['country'],
-                $data['profile_image']
-            ]);
-            */
-            unset($_SESSION['register']);
-            $verified = true;
-            $redirect = true;
-        } else {
-            $error = "Invalid verification code. Please try again.";
+            // انتهاء الصلاحية (5 دقائق)
+            if (time() - $_SESSION['register']['time'] > 30) {
+
+                $error      = "Verification code expired.";
+                $showForm   = false;
+                $showResend = true;
+            } elseif ($user_otp == $real_otp) {
+
+                // حفظ البيانات في DB
+                include 'include/db_connect.php';
+                $data  = $_SESSION['register'];
+                $sql   = "INSERT INTO `users`(`username`, `fullname`, `email`, `password`, `country`, `profile_image`) VALUES (?, ?, ?, ?, ?, ?)";
+                $query = $conn->prepare($sql);
+                $query->execute([
+                    $data['username'],
+                    $data['fullname'],
+                    $data['email'],
+                    password_hash($data['password'], PASSWORD_DEFAULT),
+                    $data['country'],
+                    $data['profile_image'],
+                ]);
+              
+
+                unset($_SESSION['register']);
+                $verified = true;
+                $redirect = true;
+            } else {
+                $error = "Invalid verification code. Please try again.";
+            }
         }
     }
-}
 ?>
 
 <?php include 'include/template/Header.php'; ?>
@@ -99,16 +92,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="card-body text-center">
 
                     <!-- رسالة خطأ (انتهاء / رمز خاطئ) -->
-                    <?php if (!empty($error)): ?>
+                    <?php if (! empty($error)): ?>
                         <div class="alert alert-danger">
-                            <?= $error ?>
+                            <?php echo $error ?>
                         </div>
                     <?php endif; ?>
 
                     <!-- رسالة معلومات (إعادة الإرسال) -->
-                    <?php if (!empty($info)): ?>
+                    <?php if (! empty($info)): ?>
                         <div class="alert alert-info">
-                            <?= $info ?>
+                            <?php echo $info ?>
                         </div>
                     <?php endif; ?>
 
@@ -120,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
 
                     <!-- فورم إدخال الكود -->
-                    <?php if ($showForm && !$verified): ?>
+                    <?php if ($showForm && ! $verified): ?>
                         <form method="post">
                             <div class="form-group">
                                 <label class="mb-3">
@@ -143,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
 
                     <!-- زر إعادة الإرسال -->
-                    <?php if ($showResend && !$verified): ?>
+                    <?php if ($showResend && ! $verified): ?>
                         <form method="post">
                             <button type="submit"
                                     name="resend"
