@@ -1,14 +1,19 @@
- <?php include 'include/template/Header.php';
+ <?php
+
+     require_once "include/db_connect.php";
     $sql_get = "SELECT category_name, category_img FROM categories ";
     $get_category = $conn->prepare($sql_get);
     $get_category->execute();
     $categories = $get_category->fetchAll();
-    $sql="SELECT   p.product_name, p.price, p.image1, p.id, c.category_name  FROM products p JOIN categories c ON p.category_id = c.id";
+    $sql = "SELECT   p.product_name, p.price, p.image1, p.id, c.category_name  FROM products p JOIN categories c ON p.category_id = c.id";
     $get_products = $conn->prepare($sql);
     $get_products->execute();
     $products = $get_products->fetchAll();
 
+  include 'include/template/Header.php';
     ?>
+
+
 
 
  <!-- Carousel Start -->
@@ -132,13 +137,12 @@
                  <h2 class="ezy__epcategory9-heading text-start mb-5 ">Top Category</h2>
              </div>
              <div class="owl-carousel owl-theme category-carousel mt-5 ">
-
                  <?php foreach ($categories as $category): ?>
                      <div class="item my-5 px-2">
                          <div class=" pt-5 wow fadeInDown" data-wow-delay="0.1s">
                              <a href="#!" class="ezy__epcategory9-item  shadow">
                                  <div class="ezy__epcategory9-img shadow-sm overflow-hidden">
-                                     <img src="<?php echo $category['category_img']; ?>" alt="" />
+                                     <img src="uploads/categories/<?php echo $category['category_img']; ?>" alt="" />
                                  </div>
                                  <div class="mt-4 pt-3 text-center text">
                                      <h5 class="mt-5 fs-4 "><?php echo $category['category_name']; ?></h5>
@@ -327,62 +331,6 @@
 
 
 
- <!-- Product List Start -->
- <div class="container product  py-5 mb-5">
-     <div class="px-1">
-
-         <!-- Title -->
-         <div class="mx-auto text-center mb-5" style="max-width: 900px;">
-             <h4 class="text-primary border-bottom border-primary border-2 d-inline-block p-2 title-border-radius wow fadeInUp"
-                 data-wow-delay="0.1s">Products</h4>
-             <p class="mb-0 display-5 wow fadeInUp" data-wow-delay="0.3s">All Product Items</p>
-         </div>
-         <!-- Carousel -->
-         <div class="owl-carousel owl-theme product-carousel  py-2">
-             <?php foreach ($products as $product) : ?>
-             <div class="item ">
-               
-                 <div class="product-card shadow  wow fadeInRight" data-wow-delay="0.1s">
-                     <!-- Image -->
-                     <div class="product-image-wrapper">
-                         <img src="<?php echo $product['image1']; ?>" alt="Product" class="product-image">
-                     </div>
-
-                     <!-- Content -->
-                     <div class="product-content text-center ">
-                         <small class="product-category"><?php echo $product['category_name']; ?></small>
-                         <h6 class="product-title mt-2"><?php echo $product['product_name']; ?></h6>
-
-                         <div class="product-price ">
-                             <span>$<?php echo $product['price']; ?></span>
-                         </div>
-                     </div>
-                     <!-- Actions -->
-                     <div class="product-actions ">
-                         <a href="#" class="btn cart-btn btn-sm">
-
-                             <span class="me-1"> Add to Cart </span>
-                             <i class="fas fa-cart-plus"></i>
-                         </a>
-
-                         <a href="#" class="btn btn-outline-primary btn-sm">
-                             <span class="me-1 "> preview</span>
-                             <i class="fas fa-eye "></i>
-                         </a>
-                     </div>
-                 </div>
-                 
-                 <!-- END PRODUCT CARD -->
-
-             </div>
-                <?php endforeach; ?>
-
-         </div>
-         <!-- End Carousel -->
-
-     </div>
- </div>
- <!-- Product List End -->
 
 
 

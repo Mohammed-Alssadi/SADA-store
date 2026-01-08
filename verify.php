@@ -38,7 +38,7 @@
             $real_otp = $_SESSION['register']['otp'];
 
             // انتهاء الصلاحية (5 دقائق)
-            if (time() - $_SESSION['register']['time'] > 30) {
+            if (time() - $_SESSION['register']['time'] > 300) {
 
                 $error      = "Verification code expired.";
                 $showForm   = false;
@@ -54,7 +54,7 @@
                     $data['username'],
                     $data['fullname'],
                     $data['email'],
-                    password_hash($data['password'], PASSWORD_DEFAULT),
+                   $data['password'],
                     $data['country'],
                     $data['profile_image'],
                 ]);
