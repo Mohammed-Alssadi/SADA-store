@@ -1,5 +1,5 @@
 <!-- ======= Elegant Professional Footer ======= -->
-<footer class="bg-secondary text-light pt-5">
+<footer class="bg-secondary text-light pt-5 ">
 
     <div class="container">
         <div class="row g-4 align-items-center">
@@ -31,7 +31,7 @@
             </div>
 
             <!-- Newsletter -->
-            <div class="col-lg-4">
+            <!-- <div class="col-lg-4">
                 <div class="bg-black rounded-4 p-4 shadow text-center">
                     <h5 class="fw-bold mb-3 text-warning">Subscribe to our Newsletter</h5>
 
@@ -47,7 +47,7 @@
                         </button>
                     </form>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Quick Links -->
             <div class="col-lg-4 text-center text-lg-end">
@@ -100,11 +100,24 @@
     <script src="assets/js/main.js"></script>
 
     <!-- Custom Script for Modal Close -->
+   
+ 
     <script>
         $(document).ready(function() {
-            $('#loginModal .btn-close').on('click', function() {
-                $('#loginModal').modal('hide');
-            });
+            // fix selector: modal id is '#login'
+            // $('#login .btn-close').on('click', function() {
+            //     $('#login').modal('hide');
+            // });
+
+            // If server-side validation produced errors, open the login modal.
+            <?php if (
+                (isset($emailError) && $emailError) ||
+                (isset($passwordError) && $passwordError) ||
+                (isset($loginError) && $loginError)
+            ): ?>
+                var myModal = new bootstrap.Modal(document.getElementById('login'));
+                myModal.show();
+            <?php endif; ?>
         });
     </script>
 </body>
