@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SADA store</title>
     <style>
-       .nav-item a {
+    .nav-item a {
     text-decoration: none; /* إزالة الخط */
     color: inherit;        /* يخلي اللون مثل النص */
 }
@@ -16,6 +16,7 @@
     text-decoration: none; /* إزالة الخط */
     color: inherit;        /* يخلي اللون مثل النص */
 }
+
 
     </style>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,45 +54,45 @@
 
             <nav class="sidebar-nav">
                 <div class="nav-section">
-                    <div class="nav-item ">
-                            <a href="index.php">
+                    <a href="index.php">
+                    <div class="nav-item "> 
                         <i class="fas fa-home"></i>
                         <span class="nav-text">لوحة التحكم</span>
-                            </a>
                     </div>
+                </a>
                 </div>
 
                 <div class="nav-section">
                     <div class="section-title">التطبيقات والصفحات</div>
                     
-                    <div class="nav-item">
-                        <a href="ProductManagement.php">
+                    <a href="ProductManagement.php">
+                    <div class="nav-item ">
                         <i class="fas fa-tasks"></i>
                          
                         <span class="nav-text">أدارة السلع</span>
-                         </a>
                     </div>
+                </a>
+                <a href="categories.php">
                     <div class="nav-item">
-                           <a href="categories.php">
                         <i class="fas fa-envelope"></i>
                       
                         <span class="nav-text">الفئات</span>
-                         </a>
                     </div>
+                </a>
+                <a href="orders.php">
                     <div class="nav-item">
-                            <a href="orders.php">
                         <i class="fas fa-calendar"></i>
                        
                         <span class="nav-text"> الطلبات</span>
-                         </a>
                     </div>
+                </a>
+                <a href="messages.php">
                     <div class="nav-item">
-                        <a href="messages.php">
                         <i class="fas fa-comments"></i>
                          
                         <span class="nav-text">الرسائل</span>
-                         </a>
                     </div>
+                </a>
                     <!-- <div class="nav-item">
                         <i class="fas fa-envelope"></i>
                         <span class="nav-text">البريد الإلكتروني</span>

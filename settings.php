@@ -1,4 +1,26 @@
-<?php include 'include/template/Header.php'?>
+<?php
+    session_start();
+    include 'include/db_connect.php';
+
+    // فحص تسجيل الدخول: إذا لم يكن المستخدم مسجلاً، توجيه إلى الصفحة الرئيسية لمنع الوصول غير المصرح
+    if (! isset($_SESSION['user_id'])) {
+        header("Location: index.php");
+        exit;
+    }
+
+    // الحصول على user_id من الجلسة
+    $user_id = $_SESSION['user_id'];
+
+    $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch();
+
+    if (! $user) {
+        die("User not found");
+    }
+
+    include 'include/template/Header.php';
+?>
 
 <div class="container py-5 my-5">
 
@@ -28,7 +50,7 @@
                 <div class="tab-pane fade show active" id="general">
                     <div class="text-center mb-3">
                         <div class="position-relative profile-img d-inline-block">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mb-2" alt="Avatar" style="width: 150px; height: 150px; object-fit: cover;">
+                            <img src="uploads/users/<?php echo htmlspecialchars($user['profile_image'] ?? 'default.png'); ?>" class="rounded-circle mb-2" alt="Avatar" style="width: 150px; height: 150px; object-fit: cover;">
 
                             <!-- زر الرفع تحت الصورة -->
                             <label class="btn btn-outline-primary rounded-pill text-dark btn-sm w-50 mt-1">
@@ -41,15 +63,15 @@
                     <form class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Username</label>
-                            <input type="text" class="form-control" placeholder="User123">
+                            <input type="text" class="form-control text-secondary fs-5 " value="<?php echo htmlspecialchars($user['username'] ?? ''); ?>" placeholder="User123">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Name</label>
-                            <input type="text" class="form-control" placeholder="Full Name">
+                            <input type="text" class="form-control text-secondary fs-5" value="<?php echo htmlspecialchars($user['fullname'] ?? ''); ?>" placeholder="Full Name">
                         </div>
                         <div class="col-12">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" placeholder="your@email.com">
+                            <input type="email" class="form-control text-secondary fs-5" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" placeholder="your@email.com">
                         </div>
                     </form>
                 </div>
@@ -74,6 +96,7 @@
 
             <!-- Info -->
             <div class="tab-pane fade" id="info">
+                <p class="text-muted">Additional info fields are not implemented in the database yet.</p>
                 <form class="row g-3">
                     <div class="col-12">
                         <label class="form-label">Bio</label>
@@ -97,6 +120,7 @@
 
             <!-- Social Links -->
             <div class="tab-pane fade" id="social">
+                <p class="text-muted">Social links are not stored in the database yet.</p>
                 <form class="row g-3">
                     <div class="col-12">
                         <label class="form-label">Twitter</label>
@@ -111,6 +135,7 @@
 
             <!-- Notifications -->
             <div class="tab-pane fade" id="notifications">
+                <p class="text-muted">Notification settings are not implemented yet.</p>
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" checked>
                     <label class="form-check-label">Email me updates</label>

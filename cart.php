@@ -1,6 +1,4 @@
-
-<?php include('include/template/Header.php') ?>
-
+<?php include 'include/template/Header.php'?>
 
 
 <!-- Cart Page -->
@@ -120,4 +118,4 @@
     </div>
 </div>
 
-<?php include('include/template/Footer.php') ?>
+<?php include 'include/template/Footer.php'?>
