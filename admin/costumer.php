@@ -1,6 +1,5 @@
 
-    <?php include ("../include/template/headerAdmin.php") ?>
-
+ <?php include ("header.php"); ?>
 <div class="container-fluid mt-4">
 
     <!-- Page Header -->
@@ -97,5 +96,4 @@
     </div>
 
 </div>
-
- <?php include_once("../include/template/footerAdmin.php"); 
+ <?php include_once("footer.php"); ?>

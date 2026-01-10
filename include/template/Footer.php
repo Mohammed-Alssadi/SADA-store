@@ -100,8 +100,8 @@
     <script src="assets/js/main.js"></script>
 
     <!-- Custom Script for Modal Close -->
-   
- 
+
+
     <script>
         $(document).ready(function() {
             // fix selector: modal id is '#login'
@@ -111,9 +111,10 @@
 
             // If server-side validation produced errors, open the login modal.
             <?php if (
-                (isset($emailError) && $emailError) ||
-                (isset($passwordError) && $passwordError) ||
-                (isset($loginError) && $loginError)
+                    (isset($showLoginModal) && $showLoginModal) &&
+                    ((isset($emailError) && $emailError) ||
+                        (isset($passwordError) && $passwordError) ||
+                        (isset($loginError) && $loginError))
             ): ?>
                 var myModal = new bootstrap.Modal(document.getElementById('login'));
                 myModal.show();

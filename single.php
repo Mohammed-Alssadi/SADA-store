@@ -1,91 +1,77 @@
- <?php include('include/template/Header.php') ?>
+ <?php
+    include 'include/db_connect.php';
+    if (! isset($_GET['id']) || ! is_numeric($_GET['id'])) {
+        die("Invalid product ID");
+    }
 
+    $id = $_GET['id'];
 
+    $stmt = $conn->prepare("SELECT p.*, c.category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.id = ? AND p.product_status = 'available'");
+    $stmt->execute([$id]);
+    $product = $stmt->fetch();
 
+    if (! $product) {
+        die("Product not found");
+    }
+
+    // جمع الصور المتاحة
+    $images = array_filter([$product['image1'], $product['image2'], $product['image3']], function ($img) {
+        return ! empty($img);
+    });
+
+    include 'include/template/Header.php';
+    ?>
 
  <!-- Single Products Start -->
  <div class="container-fluid shop py-5">
      <div class="container py-5">
 
-
          <div class="row g-4 single-product">
-             <div class="col-xl-6 wow fadeInLeft" data-wow-delay="0.1s">
+             <div class="col-xl-6 wow fadeInLeft " data-wow-delay="0.1s">
                  <div class="single-carousel owl-carousel position-relative rounded-4 px-4">
-                     <div class="single-item"
-                         data-dot="<img class='img-fluid' src='img/product-4.png' alt=''>">
-                         <div class="single-inner rounded">
-                             <img src="img/product-4.png" class="img-fluid rounded" alt="Image">
+                     <?php foreach ($images as $index => $image): ?>
+                         <div class="single-item"
+                             data-dot="<img class='img-fluid' src='uploads/products/<?php echo htmlspecialchars($image); ?>' alt=''>">
+                             <div class="single-inner rounded">
+                                 <img src="uploads/products/<?php echo htmlspecialchars($image); ?>" class="img-fluid rounded" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
+                             </div>
                          </div>
-                     </div>
-                     <div class="single-item"
-                         data-dot="<img class='img-fluid' src='img/product-5.png' alt=''>">
-                         <div class="single-inner  rounded">
-                             <img src="img/product-5.png" class="img-fluid rounded" alt="Image">
-                         </div>
-                     </div>
-                     <div class="single-item"
-                         data-dot="<img class='img-fluid' src='img/product-6.png' alt=''>">
-                         <div class="single-inner t rounded">
-                             <img src="img/product-6.png" class="img-fluid rounded" alt="Image">
-                         </div>
-                     </div>
-                     <div class="single-item"
-                         data-dot="<img class='img-fluid' src='img/product-7.png' alt=''>">
-                         <div class="single-inner  rounded">
-                             <img src="img/product-7.png" class="img-fluid rounded" alt="Image">
-                         </div>
-                     </div>
-                     <div class="single-item"
-                         data-dot="<img class='img-fluid' src='img/product-3.png' alt=''>">
-                         <div class="single-inner  rounded">
-                             <img src="img/product-3.png" class="img-fluid rounded" alt="Image">
-                         </div>
-                     </div>
+                     <?php endforeach; ?>
                  </div>
              </div>
              <!-- Product Info -->
-                  <div class="col-xl-6 wow fadeInRight" data-wow-delay="0.1s">
-                            <h4 class="fw-bold mb-3">Smart Camera</h4>
-                            <p class="mb-3">Category: Electronics</p>
-                            <h5 class="fw-bold mb-3">3,35 $</h5>
-                            <div class="d-flex mb-4">
-                                <i class="fa fa-star text-secondary"></i>
-                                <i class="fa fa-star text-secondary"></i>
-                                <i class="fa fa-star text-secondary"></i>
-                                <i class="fa fa-star text-secondary"></i>
-                                <i class="fa fa-star"></i>
-                            </div>
-                            <div class="mb-3">
-                                <div class="btn btn-primary d-inline-block rounded text-white py-1 px-4 me-2"><i
-                                        class="fab fa-facebook-f me-1"></i> Share</div>
-                                <div class="btn btn-secondary d-inline-block rounded text-white py-1 px-4 ms-2"><i
-                                        class="fab fa-twitter ms-1"></i> Share</div>
-                            </div>
-                            <div class="d-flex flex-column mb-3">
-                                <small>Product SKU: N/A</small>
-                                <small>Available: <strong class="text-primary">20 items in stock</strong></small>
-                            </div>
-                            <p class="mb-4">The generated Lorem Ipsum is therefore always free from repetition injected
-                                humour, or non-characteristic words etc.</p>
-                            <p class="mb-4">Susp endisse ultricies nisi vel quam suscipit. Sabertooth peacock flounder;
-                                chain pickerel hatchetfish, pencilfish snailfish</p>
-                            <div class="input-group quantity mb-5" style="width: 100px;">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-minus rounded-circle bg-light border">
-                                        <i class="fa fa-minus"></i>
-                                    </button>
-                                </div>
-                                <input type="text" class="form-control form-control-sm text-center border-0" value="1">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-plus rounded-circle bg-light border">
-                                        <i class="fa fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <a href="#"
-                                class="btn btn-primary border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i
-                                    class="fa fa-shopping-bag me-2 text-white"></i> Add to cart</a>
-                        </div>
+             <div class="col-xl-6 wow fadeInRight " data-wow-delay="0.1s">
+                 <h4 class="fw-bold mb-3 mt-lg-5 pt-lg-5"><?php echo htmlspecialchars($product['product_name']); ?></h4>
+                 <p class="mb-3  text-secondary"><?php echo htmlspecialchars($product['category_name']); ?></p>
+                 <h5 class="fw-bold mb-3">
+                     $<?php echo number_format($product['price'], 2); ?>
+                     <?php if ($product['discount'] > 0): ?>
+                         <small class="text-muted ms-2"><del>$<?php echo number_format($product['price'] + $product['discount'], 2); ?></del></small>
+                     <?php endif; ?>
+                 </h5>
+             
+                 <div class="d-flex flex-column mb-3">
+                     <small>Product SKU: <?php echo htmlspecialchars($product['id']); ?></small>
+                     <small>Available: <strong class="text-primary"><?php echo htmlspecialchars($product['quantity']); ?> items in stock</strong></small>
+                 </div>
+                 <p class="mb-4"><?php echo htmlspecialchars($product['description'] ?? 'No description available.'); ?></p>
+                 <div class="input-group quantity mb-5" style="width: 100px;">
+                     <div class="input-group-btn">
+                         <button class="btn btn-sm btn-minus rounded-circle bg-light border">
+                             <i class="fa fa-minus"></i>
+                         </button>
+                     </div>
+                     <input type="text" class="form-control form-control-sm text-center border-0" value="1">
+                     <div class="input-group-btn">
+                         <button class="btn btn-sm btn-plus rounded-circle bg-light border">
+                             <i class="fa fa-plus"></i>
+                         </button>
+                     </div>
+                 </div>
+                 <a href="#"
+                     class="btn btn-primary border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i
+                         class="fa fa-shopping-bag me-2 text-white"></i> Add to cart</a>
+             </div>
          </div>
          <div class="col-lg-12">
              <nav>
@@ -101,11 +87,7 @@
              <div class="tab-content mb-5">
                  <div class="tab-pane active" id="nav-about" role="tabpanel"
                      aria-labelledby="nav-about-tab">
-                     <p>Our new <b class="fw-bold">HPB12 / A12 battery</b> is rated at 2000mAh and
-                         designed to power up Black and Decker / FireStorm line of 12V tools allowing
-                         users to run multiple devices off the same battery pack. The HPB12 is compatible
-                         with the following Black and Decker power tool models:
-                     </p>
+                     <p><?php echo htmlspecialchars($product['description'] ?? 'No description available for this product.'); ?></p>
 
                  </div>
                  <div class="tab-pane" id="nav-mission" role="tabpanel"
@@ -403,4 +385,4 @@
  <!-- Related Product End -->
 
  <!-- Footer Start -->
- <?php include('include/template/Footer.php') ?>
+ <?php include 'include/template/Footer.php' ?>

@@ -1,42 +1,55 @@
 <?php
-require_once "include/db_connect.php";
-$emailError = $passwordError = $loginError = '';
-$email = '';
+    require_once "include/db_connect.php";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email    = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    if (!$email) {
-        $emailError = 'Email is required';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $emailError = 'Invalid email';
+    if (! session_id()) {
+        session_start();
     }
+    $emailError = $passwordError = $loginError = '';
+    $email      = '';
 
-    if (!$password) {
-        $passwordError = 'Password is required';
-    }
+    $showLoginModal = true;
 
-    if (!$emailError && !$passwordError) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $email    = trim($_POST['email'] ?? '');
+        $password = trim($_POST['password'] ?? '');
 
-        $stmt = $conn->prepare(
-            "SELECT id, password FROM users WHERE email = :email LIMIT 1"
-        );
-        $stmt->execute(['email' => $email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (! $email) {
+            $emailError = 'Email is required';
+        } elseif (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $emailError = 'Invalid email';
+        }
 
+        if (! $password) {
+            $passwordError = 'Password is required';
+        }
 
-        if ($user && $password == $user['password']) {
-            session_regenerate_id(true);
-            $_SESSION['user_id'] = $user['id'];
-            header('Location:settings.php');
-            exit;
-        } else {
-            $loginError = 'Invalid email or password';
+        if (! $emailError && ! $passwordError) {
+
+            $stmt = $conn->prepare(
+                "SELECT id, password, profile_image FROM users WHERE email = :email"
+            );
+            $stmt->execute(['email' => $email]);
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($users as $user) {
+                if (password_verify($password, $user['password'])) {
+                    session_regenerate_id(true);
+                    $_SESSION['user_id']       = $user['id'];
+                    $_SESSION['profile_image'] = $user['profile_image'];
+
+                    header('Location: settings.php');
+                    exit;
+                }
+            }
+
+            $loginError = 'Invalid email or password.';
+        }
+
+        if ($emailError || $passwordError || $loginError) {
+            $showLoginModal = true;
         }
     }
-}
-// echo "Connected successfully";
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -74,6 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="assets/css/product-card.css" rel="stylesheet">
     <link href="assets/css/category-section.css" rel="stylesheet">
 </head>
+<style>
+
+</style>
 
 <body>
 
@@ -92,11 +108,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     <!-- Top Bar -->
-    <div class="container-fluid bg-secondary text-light py-2 d-none  d-lg-block px-0">
+    <div class="container-fluid bg-secondary text-light py-2 d-none  d-lg-block px-0  sticky-top">
         <div class="container">
             <div class="d-flex justify-content-between small">
                 <span><i class="fa fa-truck me-2"></i>Free Shipping Over $100</span>
-                <span>Support | Track Order</span>
+                <span id="current-time">
+                    <i class="fa fa-clock me-2"></i>
+                    <?php echo date('l, F j, Y - g:i A'); // عرض الوقت الحالي مع التاريخ والوقت
+                    ?>
+                </span>
             </div>
         </div>
     </div>
@@ -145,48 +165,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="col-lg-3 col-md-4 col-6 order-2 order-md-3 text-end">
                     <div class="d-inline-flex align-items-center gap-2">
 
-                        <!-- Account Dropdown -->
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa fa-user"></i>
-                            </button>
+                    <?php if (! empty($_SESSION['user_id'])):
+                    ?>
 
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                <li>
-                                    <a class="dropdown-item" href="profile.php">
-                                        <i class="fa fa-user-circle me-2"></i>Profile
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="settings.php">
-                                        <i class="fa fa-cog me-2"></i>Settings
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item text-danger" href="logout.php">
-                                        <i class="fa fa-sign-out-alt me-2"></i>Logout
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                            <!-- Account Dropdown -->
+                            <div class="dropdown user-dropdown">
+
+                                <a href="#"
+                                    class="d-flex align-items-center text-decoration-none"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+
+                                    <!-- Avatar -->
+                                    <img src="<?php echo "uploads/users/" . $_SESSION['profile_image']; ?>"
+                                        alt="User Avatar"
+                                        class="rounded-circle user-avatar">
+
+                                    <!-- Optional name -->
+                                    <!-- <span class="ms-2 d-none d-md-inline fw-semibold text-dark">
+                                        Mohammed
+                                    </span> -->
+                                </a>
+
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center" href="profile.php">
+                                            <i class="fa fa-user-circle me-2 text-secondary"></i>
+                                            Profile
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center" href="settings.php">
+                                            <i class="fa fa-cog me-2 text-secondary"></i>
+                                            Settings
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center text-danger" href="logout.php">
+                                            <i class="fa fa-sign-out-alt me-2"></i>
+                                            Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        <?php endif; ?>
+
 
                         <!-- Cart -->
                         <a href="cart.php" class="btn btn-outline-secondary position-relative">
                             <i class="fa fa-shopping-cart"></i>
                             <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info text-dark">
-                                3
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info text-dark cart-badge">
+                                <?php 1; ?>1
                             </span>
                         </a>
 
                         <!-- Login Button -->
-                        <button class="btn btn-primary fw-semibold d-none d-md-inline-block" data-bs-toggle="modal" data-bs-target="#login">
-                            Login
-                        </button>
+                        <?php if (! isset($_SESSION['user_id'])): ?>
+                            <button class="btn btn-primary fw-semibold d-none d-md-inline-block" data-bs-toggle="modal" data-bs-target="#login">
+                                Login
+                            </button>
+                        <?php else: ?>
+                            <a href="logout.php" class="btn btn-outline-secondary fw-semibold d-none d-md-inline-block">
+                                Logout
+                            </a>
+                        <?php endif; ?>
 
                         <!-- Mobile Menu -->
                         <button class="btn btn-outline-secondary d-lg-none"
@@ -251,10 +301,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input
                                 type="email"
                                 name="email"
-                                class="form-control <?= $emailError ? 'is-invalid' : '' ?>"
-                                value="<?= htmlspecialchars($email) ?>">
+                                class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <?php echo $emailError ? 'is-invalid' : '' ?>"
+                                value="<?php echo htmlspecialchars($email) ?>">
                             <?php if ($emailError): ?>
-                                <div class="invalid-feedback"><?= $emailError ?></div>
+                                <div class="invalid-feedback"><?php echo $emailError ?></div>
                             <?php endif; ?>
                         </div>
 
@@ -263,15 +313,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input
                                 type="password"
                                 name="password"
-                                class="form-control <?= $passwordError ? 'is-invalid' : '' ?>">
+                                class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <?php echo $passwordError ? 'is-invalid' : '' ?>">
                             <?php if ($passwordError): ?>
-                                <div class="invalid-feedback"><?= $passwordError ?></div>
+                                <div class="invalid-feedback"><?php echo $passwordError ?></div>
                             <?php endif; ?>
                         </div>
 
                         <?php if ($loginError): ?>
                             <div class="alert alert-danger text-center">
-                                <?= $loginError ?>
+                                <?php echo $loginError ?>
                             </div>
                         <?php endif; ?>
 
@@ -295,3 +345,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- ======= HEADER END ======= -->
+
+    <script>
+        // تحديث الوقت الحالي كل ثانية
+        function updateTime() {
+            const now = new Date();
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+            document.getElementById('current-time').innerHTML = '<i class="fa fa-clock me-2"></i>' + now.toLocaleDateString('en-US', options);
+        }
+        updateTime(); // تحديث فوري
+        setInterval(updateTime, 1000); // تحديث كل ثانية
+    </script>

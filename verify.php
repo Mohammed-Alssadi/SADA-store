@@ -2,6 +2,7 @@
     session_start();
     require 'vendor/autoload.php';
     require 'include/functions.php';
+    $showLoginModal = false;
 
     if (! isset($_SESSION['register'])) {
         header("Location: register.php");
@@ -38,7 +39,7 @@
             $real_otp = $_SESSION['register']['otp'];
 
             // انتهاء الصلاحية (5 دقائق)
-            if (time() - $_SESSION['register']['time'] > 300) {
+            if (time() - $_SESSION['register']['time'] > 60) {
 
                 $error      = "Verification code expired.";
                 $showForm   = false;
@@ -54,11 +55,10 @@
                     $data['username'],
                     $data['fullname'],
                     $data['email'],
-                   $data['password'],
+                    $data['password'],
                     $data['country'],
                     $data['profile_image'],
                 ]);
-              
 
                 unset($_SESSION['register']);
                 $verified = true;
@@ -71,12 +71,16 @@
 ?>
 
 <?php include 'include/template/Header.php'; ?>
+<?php
+    // إخفاء مودال تسجيل الدخول في صفحة التحقق
+    $showLoginModal = false;
+?>
 
 <?php if ($redirect): ?>
     <script>
         setTimeout(() => {
             window.location.href = "index.php";
-        }, 3000);
+        }, 5000); // إصلاح: تغيير من 50000 إلى 5000 ميلي ثانية لإعادة توجيه أسرع بعد التحقق الناجح
     </script>
 <?php endif; ?>
 
@@ -119,6 +123,9 @@
                                 <label class="mb-3">
                                     Enter the code sent to your email
                                 </label>
+                                <p class="text-muted small" id="timer">
+                                    Time remaining: <span id="countdown">--:--</span>
+                                </p>
 
                                 <input type="text"
                                        name="otp"
@@ -133,6 +140,27 @@
                                 </button>
                             </div>
                         </form>
+                        <script>
+                            // حساب الوقت المتبقي من PHP
+                            let remainingTime =                                                <?php echo $remaining_time; ?>;
+                            const countdownElement = document.getElementById('countdown');
+
+                            function updateTimer() {
+                                if (remainingTime <= 0) {
+                                    countdownElement.textContent = '00:00';
+                                    // إعادة تحميل الصفحة أو إظهار زر إعادة الإرسال
+                                    location.reload();
+                                    return;
+                                }
+                                const minutes = Math.floor(remainingTime / 60);
+                                const seconds = remainingTime % 60;
+                                countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                                remainingTime--;
+                            }
+
+                            updateTimer(); // تحديث فوري
+                            setInterval(updateTimer, 1000); // تحديث كل ثانية
+                        </script>
                     <?php endif; ?>
 
                     <!-- زر إعادة الإرسال -->

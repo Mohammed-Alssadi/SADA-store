@@ -1,7 +1,6 @@
 
 
-    <?php include ("../include/template/headerAdmin.php") ?>
-
+ <?php include ("header.php"); ?>
 <div class="container py-4">
 
     <!-- Page Header -->
@@ -51,5 +50,4 @@
 
 </div>
 
- <?php include_once("../include/template/footerAdmin.php"); 
-
+ <?php include_once("footer.php"); ?>

@@ -1,21 +1,29 @@
  <?php
 
      require_once "include/db_connect.php";
-    $sql_get = "SELECT category_name, category_img FROM categories ";
-    $get_category = $conn->prepare($sql_get);
-    $get_category->execute();
-    $categories = $get_category->fetchAll();
-    $sql = "SELECT   p.product_name, p.price, p.image1, p.id, c.category_name  FROM products p JOIN categories c ON p.category_id = c.id";
-    $get_products = $conn->prepare($sql);
-    $get_products->execute();
-    $products = $get_products->fetchAll();
+     $sql_get      = "SELECT category_name, category_img FROM categories ";
+     $get_category = $conn->prepare($sql_get);
+     $get_category->execute();
+     $categories   = $get_category->fetchAll();
+     $sql = "SELECT p.product_name, p.price, p.discount, p.image1, p.id, p.created_at, c.category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.product_status = 'available'";
+     $get_products = $conn->prepare($sql);
+     $get_products->execute();
+     $all_products = $get_products->fetchAll();
 
-  include 'include/template/Header.php';
-    ?>
+     // فلترة المنتجات
+     $new_products = array_filter($all_products, function ($product) {
+         $created_date = new DateTime($product['created_at']);
+         $now          = new DateTime();
+         $interval = $now->diff($created_date);
+         return $interval->days <= 30; // منتجات أحدث من 30 يوماً
+     });
 
+     $featured_products = array_filter($all_products, function ($product) {
+         return $product['discount'] > 0;
+     });
 
-
-
+     include 'include/template/Header.php';
+ ?>
  <!-- Carousel Start -->
  <div class="container-fluid  p-2">
      <div class="row g-0 justify-content-center ">
@@ -25,27 +33,27 @@
                      <div class="col-xl-6 carousel-img wow fadeInLeft" data-wow-delay="0.1s">
                          <img src="img/carousel-1.png" class="img-fluid w-100" alt="Image">
                      </div>
-                     <div class="col-xl-6 carousel-content p-4">
-                         <h4 class="text-uppercase fw-bold mb-4 wow fadeInRight" data-wow-delay="0.1s"
+                     <div class="col-xl-6 carousel-content p-4 wow fadeInRight" data-wow-delay="0.1s">
+                         <h4 class="text-uppercase fw-bold mb-4 "
                              style="letter-spacing: 3px;">Save Up To A $400</h4>
-                         <h1 class="display-3 text-capitalize mb-4 wow fadeInRight" data-wow-delay="0.3s">On Selected
+                         <h1 class="display-3 text-capitalize mb-4 " data-wow-delay="0.1s">On Selected
                              Laptops & Desktop Or Smartphone</h1>
-                         <p class="text-dark wow fadeInRight" data-wow-delay="0.5s">Terms and Condition Apply</p>
-                         <a class="btn btn-primary rounded-pill py-3 px-5 wow fadeInRight" data-wow-delay="0.s"
+                         <p class="text-dark wow fadeInRight" data-wow-delay="0.1s">Terms and Condition Apply</p>
+                         <a class="btn btn-primary rounded-pill py-3 px-5 wow fadeInRight" data-wow-delay="0.1s"
                              href="#">Shop Now</a>
                      </div>
                  </div>
                  <div class="row g-4 header-carousel-item align-items-center">
-                     <div class="col-xl-6 carousel-img wow fadeInLeft" data-wow-delay="0.1s">
+                     <div class="col-xl-6 carousel-img wow fadeInRight" data-wow-delay="0.1s">
                          <img src="img/carousel-2.png" class="img-fluid w-100" alt="Image">
                      </div>
                      <div class="col-xl-6 carousel-content p-4">
-                         <h4 class="text-uppercase fw-bold mb-4 wow fadeInRight" data-wow-delay="0.1s"
+                         <h4 class="text-uppercase fw-bold mb-4 wow fadeInLeft" data-wow-delay="0.1s"
                              style="letter-spacing: 3px;">Save Up To A $200</h4>
-                         <h1 class="display-3 text-capitalize mb-4 wow fadeInRight" data-wow-delay="0.3s">On Selected
+                         <h1 class="display-3 text-capitalize mb-4 wow fadeInLeft" data-wow-delay="0.3s">On Selected
                              Laptops & Desktop Or Smartphone</h1>
                          <p class="text-dark wow fadeInRight" data-wow-delay="0.5s">Terms and Condition Apply</p>
-                         <a class="btn btn-primary rounded-pill py-3 px-5 wow fadeInRight" data-wow-delay="0.s"
+                         <a class="btn btn-primary rounded-pill py-3 px-5 " data-wow-delay="0.s"
                              href="#">Shop Now</a>
                      </div>
                  </div>
@@ -59,73 +67,70 @@
 
 
 
+<!-- Services Start -->
+<div class="container my-1 py-4">
+    <div class="row justify-content-center g-3">
 
- <!-- Searvices Start -->
- <div class="container-fluid px-0 my-1 py-4 ">
-     <div class="row gap-3 justify-content-center ">
-         <div class="col-12 col-md-4 col-lg-2  border-1 border-primary rounded wow fadeInUp shadow-lg" data-wow-delay="0.1s"
-             style="border-style: dashed;">
-             <div class="p-4">
-                 <div class="d-inline-flex align-items-center justify-content-center">
-                     <i class="fa fa-sync-alt fa-2x text-primary"></i>
-                     <div class="ms-4">
-                         <h6 class="text-uppercase mb-2">Free Return</h6>
-                         <p class="mb-0">30 days money back guarantee!</p>
-                     </div>
-                 </div>
-             </div>
-         </div>
+        <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
+                <div class="p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fa fa-sync-alt fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Free Return</h6>
+                            <p class="mb-0">30 days money back guarantee!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-         <div class="col-12 col-md-4 col-lg-2  border-1 border-primary rounded wow fadeInUp shadow-lg" data-wow-delay="0.2s"
-             style="border-style: dashed;">
-             <div class="p-4">
-                 <div class="d-inline-flex align-items-center justify-content-center">
-                     <i class="fas fa-life-ring fa-2x text-primary"></i>
-                     <div class="ms-4">
-                         <h6 class="text-uppercase mb-2">Support 24/7</h6>
-                         <p class="mb-0">We support online 24 hrs a day</p>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <div class="col-12 col-md-4 col-lg-2  border-1 border-primary rounded wow fadeInUp shadow-lg" data-wow-delay="0.3s"
-             style="border-style: dashed;">
-             <div class="p-4">
-                 <div class="d-inline-flex align-items-center justify-content-center">
-                     <i class="fas fa-credit-card fa-2x text-primary"></i>
-                     <div class="ms-4">
-                         <h6 class="text-uppercase mb-2">Receive Gift Card</h6>
-                         <p class="mb-0">Recieve gift all over oder $50</p>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <div class="col-12 col-md-4 col-lg-2  border-1 border-primary rounded wow fadeInUp shadow-lg" data-wow-delay="0.4s"
-             style="border-style: dashed;">
-             <div class="p-4">
-                 <div class="d-inline-flex align-items-center justify-content-center">
-                     <i class="fas fa-lock fa-2x text-primary"></i>
-                     <div class="ms-4">
-                         <h6 class="text-uppercase mb-2">Secure Payment</h6>
-                         <p class="mb-0">We Value Your Security</p>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <div class="col-12 col-md-4 col-lg-2  border-1 border-primary rounded wow fadeInUp shadow-lg" data-wow-delay="0.5s"
-             style="border-style: dashed;">
-             <div class="p-4">
-                 <div class="d-inline-flex align-items-center justify-content-center">
-                     <i class="fas fa-blog fa-2x text-primary"></i>
-                     <div class="ms-4">
-                         <h6 class="text-uppercase mb-2">Online Service</h6>
-                         <p class="mb-0">Free return products in 30 days</p>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
- </div>
+        <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.2s">
+            <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
+                <div class="p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-life-ring fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Support 24/7</h6>
+                            <p class="mb-0">We support online 24 hrs a day</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.4s">
+            <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
+                <div class="p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-lock fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Secure Payment</h6>
+                            <p class="mb-0">We Value Your Security</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.5s">
+            <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
+                <div class="p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-blog fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Online Service</h6>
+                            <p class="mb-0">Free return products in 30 days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Services End -->
+
  <!-- Searvices End -->
 
 
@@ -223,64 +228,138 @@
              <!-- TAB ALL -->
              <div id="tab-all" class="tab-pane fade show active">
                  <div class="row g-4">
+                     <?php foreach ($all_products as $product): ?>
+                         <!-- PRODUCT CARD -->
+                         <div class="col-12 col-md-6 col-lg-4 col-xl-3 wow fadeInRight" data-wow-delay="0.2s">
+                             <div class="product-card shadow">
 
-                     <!-- PRODUCT CARD -->
-                     <div class="col-12 col-md-6 col-lg-4 col-xl-3 wow fadeInRight" data-wow-delay="0.2s">
-                         <div class="product-card shadow ">
-
-                             <!-- Image -->
-                             <div class="product-image-wrapper">
-                                 <img src="img/product-3.png" alt="Product" class="product-image">
-                             </div>
-
-                             <!-- Content -->
-                             <div class="product-content text-center ">
-                                 <small class="product-category">Smart Phone</small>
-                                 <h6 class="product-title mt-2">Apple iPad Mini</h6>
-
-                                 <div class="product-price ">
-                                     <span>$1,050</span>
+                                 <!-- Image -->
+                                 <div class="product-image-wrapper">
+                                     <img src="uploads/products/<?php echo htmlspecialchars($product['image1']); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>" class="product-image">
                                  </div>
+
+                                 <!-- Content -->
+                                 <div class="product-content text-center">
+                                     <small class="product-category"><?php echo htmlspecialchars($product['category_name']); ?></small>
+                                     <h6 class="product-title mt-2"><?php echo htmlspecialchars($product['product_name']); ?></h6>
+
+                                     <div class="product-price">
+                                         <span>$<?php echo number_format($product['price'], 2); ?></span>
+                                         <?php if ($product['discount'] > 0): ?>
+                                             <small class="text-muted ms-2"><del>$<?php echo number_format($product['price'] + $product['discount'], 2); ?></del></small>
+                                         <?php endif; ?>
+                                     </div>
+                                 </div>
+
+                                 <!-- Actions -->
+                                 <div class="product-actions mb-">
+                                     <a href="#" class="btn cart-btn btn-sm">
+                                         <span class="me-1"> Add to Cart </span>
+                                         <i class="fas fa-cart-plus"></i>
+                                     </a>
+
+                                     <a href="single.php?id=<?php echo $product['id']; ?>" class="btn btn-outline-primary btn-sm">
+                                         <span class="me-1"> preview</span>
+                                         <i class="fas fa-eye"></i>
+                                     </a>
+                                 </div>
+
                              </div>
-
-                             <!-- Actions -->
-                             <div class="product-actions mb-">
-                                 <a href="#" class="btn cart-btn btn-sm">
-
-                                     <span class="me-1"> Add to Cart </span>
-                                     <i class="fas fa-cart-plus"></i>
-                                 </a>
-
-                                 <a href="#" class="btn btn-outline-primary btn-sm">
-                                     <span class="me-1 "> preview</span>
-                                     <i class="fas fa-eye "></i>
-                                 </a>
-                             </div>
-
-
                          </div>
-                     </div>
-                     <!-- END PRODUCT CARD -->
+                         <!-- END PRODUCT CARD -->
+                     <?php endforeach; ?>
                  </div>
              </div>
 
              <!-- TAB NEW -->
              <div id="tab-new" class="tab-pane fade">
                  <div class="row g-4">
-                     <!-- backend later -->
-                     <!-- PRODUCT CARD -->
+                     <?php foreach ($new_products as $product): ?>
+                         <!-- PRODUCT CARD -->
+                         <div class="col-12 col-md-6 col-lg-4 col-xl-3 wow fadeInRight" data-wow-delay="0.2s">
+                             <div class="product-card shadow">
 
+                                 <!-- Image -->
+                                 <div class="product-image-wrapper">
+                                     <img src="uploads/products/<?php echo htmlspecialchars($product['image1']); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>" class="product-image">
+                                 </div>
+
+                                 <!-- Content -->
+                                 <div class="product-content text-center">
+                                     <small class="product-category"><?php echo htmlspecialchars($product['category_name']); ?></small>
+                                     <h6 class="product-title mt-2"><?php echo htmlspecialchars($product['product_name']); ?></h6>
+
+                                     <div class="product-price">
+                                         <span>$<?php echo number_format($product['price'], 2); ?></span>
+                                         <?php if ($product['discount'] > 0): ?>
+                                             <small class="text-muted ms-2"><del>$<?php echo number_format($product['price'] + $product['discount'], 2); ?></del></small>
+                                         <?php endif; ?>
+                                     </div>
+                                 </div>
+
+                                 <!-- Actions -->
+                                 <div class="product-actions mb-">
+                                     <a href="#" class="btn cart-btn btn-sm">
+                                         <span class="me-1"> Add to Cart </span>
+                                         <i class="fas fa-cart-plus"></i>
+                                     </a>
+
+                                     <a href="single.php?id=<?php echo $product['id']; ?>" class="btn btn-outline-primary btn-sm">
+                                         <span class="me-1"> preview</span>
+                                         <i class="fas fa-eye"></i>
+                                     </a>
+                                 </div>
+
+                             </div>
+                         </div>
+                         <!-- END PRODUCT CARD -->
+                     <?php endforeach; ?>
                  </div>
              </div>
 
              <!-- TAB FEATURED -->
              <div id="tab-featured" class="tab-pane fade">
                  <div class="row g-4">
-                     <!-- backend later -->
+                     <?php foreach ($featured_products as $product): ?>
+                         <!-- PRODUCT CARD -->
+                         <div class="col-12 col-md-6 col-lg-4 col-xl-3 wow fadeInRight" data-wow-delay="0.2s">
+                             <div class="product-card shadow">
 
+                                 <!-- Image -->
+                                 <div class="product-image-wrapper">
+                                     <img src="uploads/products/<?php echo htmlspecialchars($product['image1']); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>" class="product-image">
+                                 </div>
 
-                     <!-- PRODUCT CARD -->
+                                 <!-- Content -->
+                                 <div class="product-content text-center">
+                                     <small class="product-category"><?php echo htmlspecialchars($product['category_name']); ?></small>
+                                     <h6 class="product-title mt-2"><?php echo htmlspecialchars($product['product_name']); ?></h6>
 
+                                     <div class="product-price">
+                                         <span>$<?php echo number_format($product['price'], 2); ?></span>
+                                         <?php if ($product['discount'] > 0): ?>
+                                             <small class="text-muted ms-2"><del>$<?php echo number_format($product['price'] + $product['discount'], 2); ?></del></small>
+                                         <?php endif; ?>
+                                     </div>
+                                 </div>
+
+                                 <!-- Actions -->
+                                 <div class="product-actions mb-">
+                                     <a href="#" class="btn cart-btn btn-sm">
+                                         <span class="me-1"> Add to Cart </span>
+                                         <i class="fas fa-cart-plus"></i>
+                                     </a>
+
+                                     <a href="single.php?id=<?php echo $product['id']; ?>" class="btn btn-outline-primary btn-sm">
+                                         <span class="me-1"> preview</span>
+                                         <i class="fas fa-eye"></i>
+                                     </a>
+                                 </div>
+
+                             </div>
+                         </div>
+                         <!-- END PRODUCT CARD -->
+                     <?php endforeach; ?>
                  </div>
              </div>
 
@@ -338,4 +417,4 @@
 
 
 
- <?php include 'include/template/Footer.php' ?>
+ <?php include 'include/template/Footer.php'?>

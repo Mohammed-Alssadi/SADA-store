@@ -14,7 +14,8 @@
 
         <main class="main-content">
             <header class="header"> -->
- <?php include ("header.php"); ?>                <!-- <div class="header-left"><button class="btn-toggle-sidebar" id="toggleSidebarBtn"><i class="fas fa-bars"></i></button></div>
+                <?php include ("../include/template/headerAdmin.php") ?>
+                <!-- <div class="header-left"><button class="btn-toggle-sidebar" id="toggleSidebarBtn"><i class="fas fa-bars"></i></button></div>
             </header> -->
 
             <div class="dashboard-container p-4">
@@ -69,4 +70,4 @@
             </div>
         </main>
     </div>
- <?php include_once("footer.php"); ?>
+ <?php include_once("../include/template/footerAdmin.php"); 

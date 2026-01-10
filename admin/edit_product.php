@@ -1,5 +1,5 @@
 <?php
-require_once("db.php");
+require '../include/db_connect.php';
 
 /* التحقق من وجود ID */
 if (!isset($_GET['id'])) {
@@ -10,22 +10,27 @@ if (!isset($_GET['id'])) {
 $id = intval($_GET['id']);
 
 /* جلب بيانات المنتج */
-$result = $conn->prepare("SELECT * FROM products WHERE id = $id");
-$product = $result->execute();
-
-if (!$product) {
-    die("Product not found");
+try {
+    $stmt = $conn->prepare('SELECT * FROM products WHERE id = :id');
+    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$product) {
+        die('Product not found');
+    }
+} catch (Exception $e) {
+    die('Database error: ' . htmlspecialchars($e->getMessage()));
 }
 
 /* تحديث المنتج */
 if (isset($_POST['update_product'])) {
 
-    $name   = $_POST['product_name'];
-    $desc   = $_POST['description'];
-    $price  = $_POST['price'];
-    $qty    = $_POST['quantity'];
+    $name   = trim($_POST['product_name']);
+    $desc   = trim($_POST['description']);
+    $price  = (float) $_POST['price'];
+    $qty    = (int) $_POST['quantity'];
     $status = $_POST['product_status'];
-    $cat_id = $_POST['category_id'];
+    $cat_id = (int) $_POST['category_id'];
 
     /* دالة تحديث الصور */
     function updateImage($inputName, $oldImage) {
@@ -44,63 +49,52 @@ if (isset($_POST['update_product'])) {
         return $oldImage;
     }
 
-    $img1 = updateImage('image1', $product['image1']);
-    $img2 = updateImage('image2', $product['image2']);
-    $img3 = updateImage('image3', $product['image3']);
+    $img1 = updateImage('img1', $product['image1']);
+    $img2 = updateImage('img2', $product['image2']);
+    $img3 = updateImage('img3', $product['image3']);
 
-    $conn->prepare("
-        UPDATE products SET
-        product_name='$name',
-        description='$desc',
-        price='$price',
-        quantity='$qty',
-        product_status='$status',
-        category_id='$cat_id',
-        image1='$img1',
-        image2='$img2',
-        image3='$img3'
-        WHERE id=$id
-    ");
+    try {
+        $upd = $conn->prepare('UPDATE products SET
+            product_name = :name,
+            description = :desc,
+            price = :price,
+            quantity = :qty,
+            product_status = :status,
+            category_id = :cat_id,
+            image1 = :img1,
+            image2 = :img2,
+            image3 = :img3
+            WHERE id = :id');
 
-    header("Location: view_product.php?id=$id");
-    exit;
+        $upd->execute([
+            ':name' => $name,
+            ':desc' => $desc,
+            ':price' => $price,
+            ':qty' => $qty,
+            ':status' => $status,
+            ':cat_id' => $cat_id,
+            ':img1' => $img1,
+            ':img2' => $img2,
+            ':img3' => $img3,
+            ':id' => $id,
+        ]);
+
+        header('Location: view_product.php?id=' . $id);
+        exit;
+    } catch (Exception $e) {
+        die('Update failed: ' . htmlspecialchars($e->getMessage()));
+    }
 }
 ?>
 
-    <?php include ("../include/template/headerAdmin.php") ?>
-    <!-- <div class="wrapper">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-container"><i class="fas fa-cube"></i><span class="logo-text">MATERIO</span></div>
-                <button class="btn-close-sidebar" id="closeSidebarBtn"><i class="fas fa-times"></i></button>
-            </div>
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <a href="index.php" class="nav-item"><i class="fas fa-home"></i><span class="nav-text" data-key="dashboard">لوحة التحكم</span></a>
-                    <a href="management_products.php" class="nav-item active"><i class="fas fa-box"></i><span class="nav-text" data-key="manageProducts">إدارة المنتجات</span></a>
-                </div>
-            </nav>
-        </aside>
-
-        <main class="main-content">
-            <header class="header">
-                <div class="header-left"><button class="btn-toggle-sidebar" id="toggleSidebarBtn"><i class="fas fa-bars"></i></button></div>
-                <div class="header-right">
-                    <div class="header-icon-group">
-                        <button class="header-icon" id="languageBtn"><i class="fas fa-language"></i></button>
-                        <div class="dropdown-menu language-menu" id="languageMenu">
-                            <div class="dropdown-item" data-lang="ar"><span>العربية</span></div>
-                            <div class="dropdown-item" data-lang="en"><span>English</span></div>
-                        </div>
-                    </div>
-                </div>
-            </header> -->
+ <?php include ("header.php"); ?>
+    
 
             <div class="dashboard-container p-4">
                 <div class="container-fluid">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 data-key="editProduct">تعديل المنتج</h4>
-                        <a href="management_products.php" class="btn btn-outline-secondary"><span data-key="cancel">إلغاء</span></a>
+                        <a href="ProductManagement.php" class="btn btn-outline-secondary"><span data-key="cancel">إلغاء</span></a>
                     </div>
 
                     <div class="form-card">
@@ -114,10 +108,12 @@ if (isset($_POST['update_product'])) {
                                     <label class="form-label" data-key="labelCategory">الفئة</label>
                                     <select name="category_id" class="form-select">
                                         <?php
-                                        $cats = $conn->prepare("SELECT id, category_name FROM categories");
-                                        while ($c = $cats->fetch()): ?>
-                                            <option value="<?= $c['id'] ?>" <?= ($c['id'] == $product['category_id']) ? 'selected' : '' ?>><?= htmlspecialchars($c['category_name']) ?></option>
-                                        <?php endwhile; ?>
+                                        $catsStmt = $conn->prepare('SELECT id, category_name FROM categories');
+                                        $catsStmt->execute();
+                                        $cats = $catsStmt->fetchAll(PDO::FETCH_ASSOC);
+                                        foreach ($cats as $c): ?>
+                                            <option value="<?= (int)$c['id'] ?>" <?= ($c['id'] == $product['category_id']) ? 'selected' : '' ?>><?= htmlspecialchars($c['category_name']) ?></option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
                                 <div class="col-md-4 mb-3">
@@ -175,4 +171,4 @@ if (isset($_POST['update_product'])) {
             </div>
         </main>
     </div>
- <?php include_once("../include/template/footerAdmin.php"); 
+ <?php include_once("footer.php"); ?>
