@@ -17,8 +17,7 @@ INNER JOIN categories c ON p.category_id = c.id
 ?>
 
 
-i<?php include ("../include/template/headerAdmin.php") ?>
-
+ <?php include ("header.php"); ?>
 
     <div class="dashboard-container p-4">
         <div class="container-fluid">
@@ -95,4 +94,4 @@ i<?php include ("../include/template/headerAdmin.php") ?>
     </main>
     </div>
 
-    <?php include_once("../include/template/footerAdmin.php"); 
+ <?php include_once("footer.php"); ?>

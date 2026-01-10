@@ -1,5 +1,5 @@
 <?php
-include "../include/db_connect.php";
+ include "../include/db_connect.php";
 
 if (!isset($_GET['id'])) {
     header('Location: ProductManagement.php');

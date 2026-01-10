@@ -1,11 +1,8 @@
 <?php
-    require_once "../include/db_connect.php";
+    require "../include/db_connect.php";
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
 
-        /* ===============================
-       1️⃣ تنظيف واستقبال البيانات
-    =============================== */
         $name        = trim($_POST['name']);
         $desc        = trim($_POST['description']);
         $price       = (float) $_POST['price'];
@@ -52,34 +49,29 @@
         $img2 = uploadImage($_FILES['img2'], $uploadDir);
         $img3 = uploadImage($_FILES['img3'], $uploadDir);
 
-        /* ===============================
-       4️⃣ إدخال البيانات (Prepared)
-    =============================== */
+
         $sql = "INSERT INTO products
             (product_name, description, price, discount, quantity, product_status,
              image1, image2, image3, category_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $query = $conn->prepare($sql);
+        $success = $query->execute([$name, $desc, $price, $discount, $qty, $status,
+            $img1, $img2, $img3, $category_id]);
 
-        if ($query) {
-            $query->execute(
-                [$name, $desc, $price, $discount, $qty, $status,
-                    $img1, $img2, $img3, $category_id]
-            );
+if ($success) {
+    echo "<script>alert('Product added successfully');</script>";
+     header("Location: productManagement.php?success=1");
+        exit;
+} else {
+    echo "<script>alert('Failed to add product');</script>";
+}
 
-            if ($query->rowCount()) {
-                echo "<script>alert('Product added successfully');</script>";
-            } else {
-                echo "<script>alert('Failed to add product');</script>";
-            }
-        } else {
-            echo "<script>alert('Database error');</script>";
-        }
     }
+
 ?>
 
- <?php include ("../include/template/headerAdmin.php") ?>
+ <?php include ("header.php"); ?>
     <!-- Page Content -->
     <div class="dashboard-container p-4">
         <div class="container-fluid">
@@ -89,15 +81,15 @@
             </div>
 
             <div class="form-card">
-                <form action="" method="POST" enctype="multipart/form-data">
+                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" enctype="multipart/form-data">
                     <div class="row">
-                        <!-- Product Name -->
+                       
                         <div class="col-md-4 mb-4">
                             <label class="form-label" data-key="labelName">اسم السلعة</label>
                             <input type="text" name="name" class="form-control" placeholder="product name" required>
                         </div>
 
-                        <!-- Category -->
+                     
                         <div class="col-md-4 mb-4">
                             <label class="form-label" data-key="labelCategory">الفئة (Category)</label>
                             <select name="category" class="form-select" required>
@@ -130,7 +122,7 @@
                         <div class="col-md-4 mb-4">
                             <label class="form-label" data-key="labelDiscount">الخصم</label>
                             <div class="input-group">
-                                <input type="number" name="Discount" class="form-control" placeholder="0.00" step="0.01"
+                                <input type="number" name="discount" class="form-control" placeholder="0.00" step="0.01"
                                     required>
                                 <span class="input-group-text">$</span>
                             </div>
@@ -140,9 +132,9 @@
                         <div class="col-md-4 mb-4">
                             <label class="form-label" data-key="labelStatus">الحالة</label>
                             <select name="status" class="form-select" required>
-                                <option value="active" data-key="statusActive">نشط</option>
-                                <option value="inactive" data-key="statusInactive">غير نشط</option>
-                                <option value="out_of_stock" data-key="statusOutOfStock">نفذت الكمية</option>
+                                <option value="1" data-key="statusActive">نشط</option>
+                                <option value="0" data-key="statusInactive">غير نشط</option>
+                                <option value="2" data-key="statusOutOfStock">نفذت الكمية</option>
                             </select>
                         </div>
 
@@ -161,24 +153,24 @@
                                 <div class="image-upload-box" onclick="document.getElementById('img1').click()">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <span data-key="uploadImg1">الصورة 1</span>
-                                    <input type="file" id="img1" name="img1" accept="image/*" style="display: none;"
-                                        onchange="previewImage(this, 'preview1')">
+                                    <input type="file" id="img1" name="img1" accept="image/*" style="display: none;" hidden
+               onchange="previewImage(this, 'preview1')">
                                     <img id="preview1" class="image-preview">
                                 </div>
                                 <!-- Image 2 -->
                                 <div class="image-upload-box" onclick="document.getElementById('img2').click()">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <span data-key="uploadImg2">الصورة 2</span>
-                                    <input type="file" id="img2" name="img2" accept="image/*" style="display: none;"
-                                        onchange="previewImage(this, 'preview2')">
+                                    <input type="file" id="img2" name="img2" accept="image/*" style="display: none;" hidden
+               onchange="previewImage(this, 'preview2')">
                                     <img id="preview2" class="image-preview">
                                 </div>
                                 <!-- Image 3 -->
                                 <div class="image-upload-box" onclick="document.getElementById('img3').click()">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <span data-key="uploadImg3">الصورة 3</span>
-                                    <input type="file" id="img3" name="img3" accept="image/*" style="display: none;"
-                                        onchange="previewImage(this, 'preview3')">
+                                    <input type="file" id="img3" name="img3" accept="image/*" style="display: none;" hidden
+               onchange="previewImage(this, 'preview3')">
                                     <img id="preview3" class="image-preview">
                                 </div>
                             </div>
@@ -197,5 +189,22 @@
     </div>
     </main>
     </div>
+    <script>
+function previewImage(input, previewId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
 
- <?php include_once("../include/template/footerAdmin.php"); 
+        reader.onload = function (e) {
+            const img = document.getElementById(previewId);
+            img.src = e.target.result;
+            img.style.display = 'block';
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+
+
+ <?php include_once("footer.php");
+  ?>

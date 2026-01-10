@@ -1,6 +1,5 @@
 
-    <?php include ("../include/template/headerAdmin.php") ?>
-
+ <?php include_once("header.php"); ?>
 <div class="container mt-5">
 
     <!-- Page Header -->
@@ -123,4 +122,4 @@
 
 </div>
 
- <?php include_once("../include/template/footerAdmin.php"); 
+ <?php include_once("footer.php"); ?>

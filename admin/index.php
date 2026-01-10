@@ -1,6 +1,6 @@
 
 <?php 
-include ("../include/template/headerAdmin.php") ?>
+include ("header.php") ?>
             <!-- Dashboard Content -->
             <div class="dashboard-container">
                 <div class="container-fluid">
@@ -79,4 +79,5 @@ include ("../include/template/headerAdmin.php") ?>
             </div>
         </main>
     </div>
- <?php include_once("../include/template/footerAdmin.php"); 
+
+<?php include_once("footer.php"); ?>
