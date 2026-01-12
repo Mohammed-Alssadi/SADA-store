@@ -1,4 +1,5 @@
  <?php
+    session_start();
     include 'include/db_connect.php';
     if (! isset($_GET['id']) || ! is_numeric($_GET['id'])) {
         die("Invalid product ID");
@@ -6,21 +7,53 @@
 
     $id = $_GET['id'];
 
-    $stmt = $conn->prepare("SELECT p.*, c.category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.id = ? AND p.product_status = 'available'");
-    $stmt->execute([$id]);
-    $product = $stmt->fetch();
+     $stmt = $conn->prepare("SELECT p.*, c.category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.id = ? AND p.product_status = 'available'");
+     $stmt->execute([$id]);
+     $product = $stmt->fetch();
 
-    if (! $product) {
-        die("Product not found");
-    }
+     if (! $product) {
+         die("Product not found");
+     }
 
-    // جمع الصور المتاحة
-    $images = array_filter([$product['image1'], $product['image2'], $product['image3']], function ($img) {
-        return ! empty($img);
-    });
+     // جمع الصور المتاحة
+     $images = array_filter([$product['image1'], $product['image2'], $product['image3']], function ($img) {
+         return ! empty($img);
+     });
 
-    include 'include/template/Header.php';
-    ?>
+     // جلب التعليقات
+     $stmt_comments = $conn->prepare("SELECT c.comment, c.rating, c.created_at, u.fullname, u.profile_image FROM comments c JOIN users u ON c.user_id = u.id WHERE c.product_id = ? ORDER BY c.created_at DESC");
+     $stmt_comments->execute([$id]);
+     $comments = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
+
+     // معالجة إرسال التعليق
+     $comment_errors  = [];
+     $comment_success = false;
+ 
+     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_comment'])) {
+     $showLoginModal = false;
+        $rating       = intval($_POST['rating'] ?? 0);
+        $comment_text = trim($_POST['comment'] ?? '');
+
+        if ($rating < 1 || $rating > 5) {
+            $comment_errors[] = 'Rating must be between 1 and 5.';
+        }
+        if (empty($comment_text)) {
+            $comment_errors[] = 'Comment cannot be empty.';
+        }
+
+        if (empty($comment_errors)) {
+            $stmt_insert = $conn->prepare("INSERT INTO comments (product_id, user_id, comment, rating) VALUES (?, ?, ?, ?)");
+            $stmt_insert->execute([$id, $_SESSION['user_id'], $comment_text, $rating]);
+            $comment_success = true;
+            // إعادة تحميل الصفحة لعرض التعليق الجديد
+            header("Location: single.php?id=$id");
+            exit;
+        }
+         }
+     
+
+     include 'include/template/Header.php';
+ ?>
 
  <!-- Single Products Start -->
  <div class="container-fluid shop py-5">
@@ -49,7 +82,7 @@
                          <small class="text-muted ms-2"><del>$<?php echo number_format($product['price'] + $product['discount'], 2); ?></del></small>
                      <?php endif; ?>
                  </h5>
-             
+
                  <div class="d-flex flex-column mb-3">
                      <small>Product SKU: <?php echo htmlspecialchars($product['id']); ?></small>
                      <small>Available: <strong class="text-primary"><?php echo htmlspecialchars($product['quantity']); ?> items in stock</strong></small>
@@ -92,80 +125,72 @@
                  </div>
                  <div class="tab-pane" id="nav-mission" role="tabpanel"
                      aria-labelledby="nav-mission-tab">
-                     <div class="d-flex">
-                         <img src="img/avatar.jpg" class="img-fluid rounded-circle p-3"
-                             style="width: 100px; height: 100px;" alt="">
-                         <div class="">
-                             <p class="mb-2" style="font-size: 14px;">April 12, 2024</p>
-                             <div class="d-flex justify-content-between">
-                                 <h5>Jason Smith</h5>
-                                 <div class="d-flex mb-3">
-                                     <i class="fa fa-star text-secondary"></i>
-                                     <i class="fa fa-star text-secondary"></i>
-                                     <i class="fa fa-star text-secondary"></i>
-                                     <i class="fa fa-star text-secondary"></i>
-                                     <i class="fa fa-star"></i>
+                     <?php if (empty($comments)): ?>
+                         <p>No reviews yet. Be the first to review this product!</p>
+                     <?php else: ?>
+                         <?php foreach ($comments as $comment): ?>
+                             <div class="d-flex mb-4">
+                                 <img src="uploads/users/<?php echo htmlspecialchars($comment['profile_image'] ?: 'user.png'); ?>" class="img-fluid rounded-circle p-3"
+                                     style="width: 100px; height: 100px;" alt="">
+                                 <div class="">
+                                     <p class="mb-2" style="font-size: 14px;"><?php echo htmlspecialchars(date('F j, Y', strtotime($comment['created_at']))); ?></p>
+                                     <div class=" justify-content-between">
+                                         <h5><?php echo htmlspecialchars($comment['fullname']); ?></h5>
+                                         <div class="d-flex mb-3">
+                                             <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                 <i class="fa fa-star <?php echo $i <= $comment['rating'] ? 'text-warning' : 'text-muted'; ?>"></i>
+                                             <?php endfor; ?>
+                                         </div>
+                                     </div>
+                                     <p><?php echo htmlspecialchars($comment['comment']); ?></p>
                                  </div>
                              </div>
-                             <p>The generated Lorem Ipsum is therefore always free from repetition
-                                 injected humour, or non-characteristic
-                                 words etc. Susp endisse ultricies nisi vel quam suscipit </p>
-                         </div>
-                     </div>
-                     <div class="d-flex">
-                         <img src="img/avatar.jpg" class="img-fluid rounded-circle p-3"
-                             style="width: 100px; height: 100px;" alt="">
-                         <div class="">
-                             <p class="mb-2" style="font-size: 14px;">April 12, 2024</p>
-                             <div class="d-flex justify-content-between">
-                                 <h5>Sam Peters</h5>
-                                 <div class="d-flex mb-3">
-                                     <i class="fa fa-star text-secondary"></i>
-                                     <i class="fa fa-star text-secondary"></i>
-                                     <i class="fa fa-star text-secondary"></i>
-                                     <i class="fa fa-star"></i>
-                                     <i class="fa fa-star"></i>
-                                 </div>
-                             </div>
-                             <p class="text-dark">The generated Lorem Ipsum is therefore always free from
-                                 repetition injected humour, or non-characteristic
-                                 words etc. Susp endisse ultricies nisi vel quam suscipit </p>
-                         </div>
-                     </div>
+                         <?php endforeach; ?>
+                     <?php endif; ?>
                  </div>
-                 <div class="tab-pane" id="nav-vision" role="tabpanel">
-                     <p class="text-dark">Tempor erat elitr rebum at clita. Diam dolor diam ipsum et
-                         tempor sit. Aliqu diam
-                         amet diam et eos labore. 3</p>
-                     <p class="mb-0">Diam dolor diam ipsum et tempor sit. Aliqu diam amet diam et eos
-                         labore.
-                         Clita erat ipsum et lorem et sit</p>
-                 </div>
+            
              </div>
          </div>
          <div class="mt-5">
              <h5 class="fw-bold mb-3">Add Your Review</h5>
 
-             <form>
-                 <div class="mb-3">
-                     <label class="form-label">Your Rating</label>
-                     <div>
-                         <i class="fa fa-star text-warning fs-5"></i>
-                         <i class="fa fa-star text-warning fs-5"></i>
-                         <i class="fa fa-star text-warning fs-5"></i>
-                         <i class="fa fa-star text-muted fs-5"></i>
-                         <i class="fa fa-star text-muted fs-5"></i>
+             <?php if (isset($_SESSION['user_id'])): ?>
+                 <?php if ($comment_success): ?>
+                     <div class="alert alert-success">Your review has been submitted successfully!</div>
+                 <?php endif; ?>
+                 <?php if (! empty($comment_errors)): ?>
+                     <div class="alert alert-danger">
+                         <ul>
+                             <?php foreach ($comment_errors as $error): ?>
+                                 <li><?php echo htmlspecialchars($error); ?></li>
+                             <?php endforeach; ?>
+                         </ul>
                      </div>
-                 </div>
+                 <?php endif; ?>
+                 <form method="post">
+                     <div class="mb-3">
+                         <label class="form-label">Your Rating</label>
+                         <div id="rating-stars">
+                             <?php for ($i = 1; $i <= 5; $i++): ?>
+                                 <i class="fa fa-star text-muted fs-5 star" data-rating="<?php echo $i; ?>"></i>
+                             <?php endfor; ?>
+                         </div>
+                         <input type="hidden" name="rating" id="rating-input" value="0">
+                     </div>
 
-                 <div class="mb-3">
-                     <textarea class="form-control" rows="4" placeholder="Write your comment..."></textarea>
-                 </div>
+                     <div class="mb-3">
+                         <textarea class="form-control" name="comment" rows="4" placeholder="Write your comment..." required></textarea>
+                     </div>
 
-                 <button class="btn btn-primary px-4">
-                     Submit Review
-                 </button>
-             </form>
+                     <button type="submit" name="submit_comment" class="btn btn-primary px-4">
+                         Submit Review
+                     </button>
+                 </form>
+             <?php endif; ?>
+             <?php if (! isset($_SESSION['user_id'])): ?>
+                 <p>You must be logged in to submit a review.</p>
+                 <button class="btn btn-primary" data-bs-toggle="modal" data-key="login"   data-bs-target="#login">Login to Review</button>
+             <?php endif; ?>
          </div>
      </div>
  </div>
@@ -173,216 +198,31 @@
 
  </div>
  <!-- Single Products End -->
+0
 
- <!-- Related Product Start -->
- <!-- <div class="container-fluid related-product">
-        <div class="container">
-            <div class="mx-auto text-center pb-5" style="max-width: 700px;">
-                <h4 class="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius wow fadeInUp"
-                    data-wow-delay="0.1s">Related Products</h4>
-                <p class="wow fadeInUp" data-wow-delay="0.2s">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Modi, asperiores ducimus sint quos tempore officia similique quia? Libero, pariatur consectetur?</p>
-            </div>
-            <div class="related-carousel owl-carousel pt-4">
-                <div class="related-item rounded">
-                    <div class="related-item-inner border rounded">
-                        <div class="related-item-inner-item">
-                            <img src="img/product-3.png" class="img-fluid w-100 rounded-top" alt="">
-                            <div class="related-new">New</div>
-                            <div class="related-details">
-                                <a href="#"><i class="fa fa-eye fa-1x"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center rounded-bottom p-4">
-                            <a href="#" class="d-block mb-2">SmartPhone</a>
-                            <a href="#" class="d-block h4">Apple iPad Mini <br> G2356</a>
-                            <del class="me-2 fs-5">$1,250.00</del>
-                            <span class="text-primary fs-5">$1,050.00</span>
-                        </div>
-                    </div>
-                    <div class="related-item-add border border-top-0 rounded-bottom  text-center p-4 pt-0">
-                        <a href="#" class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4"><i
-                                class="fas fa-shopping-cart me-2"></i> Add To Cart</a>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="d-flex">
-                                <a href="#"
-                                    class="text-primary d-flex align-items-center justify-content-center me-3"><span
-                                        class="rounded-circle btn-sm-square border"><i
-                                            class="fas fa-random"></i></i></a>
-                                <a href="#"
-                                    class="text-primary d-flex align-items-center justify-content-center me-0"><span
-                                        class="rounded-circle btn-sm-square border"><i class="fas fa-heart"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="related-item rounded">
-                    <div class="related-item-inner border rounded">
-                        <div class="related-item-inner-item">
-                            <img src="img/product-3.png" class="img-fluid w-100 rounded-top" alt="">
-                            <div class="related-new">New</div>
-                            <div class="related-details">
-                                <a href="#"><i class="fa fa-eye fa-1x"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center rounded-bottom p-4">
-                            <a href="#" class="d-block mb-2">SmartPhone</a>
-                            <a href="#" class="d-block h4">Apple iPad Mini <br> G2356</a>
-                            <del class="me-2 fs-5">$1,250.00</del>
-                            <span class="text-primary fs-5">$1,050.00</span>
-                        </div>
-                    </div>
-                    <div class="related-item-add border border-top-0 rounded-bottom  text-center p-4 pt-0">
-                        <a href="#" class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4"><i
-                                class="fas fa-shopping-cart me-2"></i> Add To Cart</a>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="d-flex">
-                                <a href="#"
-                                    class="text-primary d-flex align-items-center justify-content-center me-3"><span
-                                        class="rounded-circle btn-sm-square border"><i
-                                            class="fas fa-random"></i></i></a>
-                                <a href="#"
-                                    class="text-primary d-flex align-items-center justify-content-center me-0"><span
-                                        class="rounded-circle btn-sm-square border"><i class="fas fa-heart"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="related-item rounded">
-                    <div class="related-item-inner border rounded">
-                        <div class="related-item-inner-item">
-                            <img src="img/product-3.png" class="img-fluid w-100 rounded-top" alt="">
-                            <div class="related-new">New</div>
-                            <div class="related-details">
-                                <a href="#"><i class="fa fa-eye fa-1x"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center rounded-bottom p-4">
-                            <a href="#" class="d-block mb-2">SmartPhone</a>
-                            <a href="#" class="d-block h4">Apple iPad Mini <br> G2356</a>
-                            <del class="me-2 fs-5">$1,250.00</del>
-                            <span class="text-primary fs-5">$1,050.00</span>
-                        </div>
-                    </div>
-                    <div class="related-item-add border border-top-0 rounded-bottom  text-center p-4 pt-0">
-                        <a href="#" class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4"><i
-                                class="fas fa-shopping-cart me-2"></i> Add To Cart</a>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="d-flex">
-                                <a href="#"
-                                    class="text-primary d-flex align-items-center justify-content-center me-3"><span
-                                        class="rounded-circle btn-sm-square border"><i
-                                            class="fas fa-random"></i></i></a>
-                                <a href="#"
-                                    class="text-primary d-flex align-items-center justify-content-center me-0"><span
-                                        class="rounded-circle btn-sm-square border"><i class="fas fa-heart"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="related-item rounded">
-                    <div class="related-item-inner border rounded">
-                        <div class="related-item-inner-item">
-                            <img src="img/product-3.png" class="img-fluid w-100 rounded-top" alt="">
-                            <div class="related-new">New</div>
-                            <div class="related-details">
-                                <a href="#"><i class="fa fa-eye fa-1x"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center rounded-bottom p-4">
-                            <a href="#" class="d-block mb-2">SmartPhone</a>
-                            <a href="#" class="d-block h4">Apple iPad Mini <br> G2356</a>
-                            <del class="me-2 fs-5">$1,250.00</del>
-                            <span class="text-primary fs-5">$1,050.00</span>
-                        </div>
-                    </div>
-                    <div class="related-item-add border border-top-0 rounded-bottom  text-center p-4 pt-0">
-                        <a href="#" class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4"><i
-                                class="fas fa-shopping-cart me-2"></i> Add To Cart</a>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="d-flex">
-                                <a href="#"
-                                    class="text-primary d-flex align-items-center justify-content-center me-3"><span
-                                        class="rounded-circle btn-sm-square border"><i
-                                            class="fas fa-random"></i></i></a>
-                                <a href="#"
-                                    class="text-primary d-flex align-items-center justify-content-center me-0"><span
-                                        class="rounded-circle btn-sm-square border"><i class="fas fa-heart"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="related-item rounded">
-                    <div class="related-item-inner border rounded">
-                        <div class="related-item-inner-item">
-                            <img src="img/product-3.png" class="img-fluid w-100 rounded-top" alt="">
-                            <div class="related-new">New</div>
-                            <div class="related-details">
-                                <a href="#"><i class="fa fa-eye fa-1x"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center rounded-bottom p-4">
-                            <a href="#" class="d-block mb-2">SmartPhone</a>
-                            <a href="#" class="d-block h4">Apple iPad Mini <br> G2356</a>
-                            <del class="me-2 fs-5">$1,250.00</del>
-                            <span class="text-primary fs-5">$1,050.00</span>
-                        </div>
-                    </div>
-                    <div class="related-item-add border border-top-0 rounded-bottom  text-center p-4 pt-0">
-                        <a href="#" class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4"><i
-                                class="fas fa-shopping-cart me-2"></i> Add To Cart</a>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="d-flex">
-                                <a href="#"
-                                    class="text-primary d-flex align-items-center justify-content-center me-3"><span
-                                        class="rounded-circle btn-sm-square border"><i
-                                            class="fas fa-random"></i></i></a>
-                                <a href="#"
-                                    class="text-primary d-flex align-items-center justify-content-center me-0"><span
-                                        class="rounded-circle btn-sm-square border"><i class="fas fa-heart"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
- <!-- Related Product End -->
+ <script>
+     document.addEventListener('DOMContentLoaded', function() {
+         const stars = document.querySelectorAll('#rating-stars .star');
+         const ratingInput = document.getElementById('rating-input');
+
+         stars.forEach(star => {
+             star.addEventListener('click', function() {
+                 const rating = this.getAttribute('data-rating');
+                 ratingInput.value = rating;
+
+                 stars.forEach(s => {
+                     if (s.getAttribute('data-rating') <= rating) {
+                         s.classList.remove('text-muted');
+                         s.classList.add('text-warning');
+                     } else {
+                         s.classList.remove('text-warning');
+                         s.classList.add('text-muted');
+                     }
+                 });
+             });
+         });
+     });
+ </script>
 
  <!-- Footer Start -->
- <?php include 'include/template/Footer.php' ?>
+ <?php include 'include/template/Footer.php'?>

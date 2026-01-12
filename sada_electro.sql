@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 07, 2026 at 07:47 PM
+-- Generation Time: Jan 12, 2026 at 05:41 PM
 -- Server version: 8.0.36
 -- PHP Version: 8.2.12
 
@@ -39,12 +39,27 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `category_name`, `category_img`, `category_status`) VALUES
-(1, 'Laptops', 'img\\categories\\Laptops.png', 1),
-(2, 'Smartphones', 'img\\products\\product-10.png', 1),
-(3, 'Accessories', 'img\\product-2.png', 1),
-(4, 'Headphones', 'img\\products\\product-banner-2.jpg', 1),
-(5, 'Digital Camera', 'img\\products\\product-7.png', 1),
-(6, 'Camera', 'img\\product-4.png', 1);
+(1, 'Laptops', 'Laptops.png', 1),
+(2, 'Smartphones', 'product-10.png', 1),
+(3, 'Accessories', 'product-2.png', 1),
+(4, 'Headphones', 'product-banner-2.jpg', 1),
+(5, 'Digital Camera', 'product-7.png', 1),
+(6, 'Camera', 'product-4.png', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `comments`
+--
+
+CREATE TABLE `comments` (
+  `id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `comment` text NOT NULL,
+  `rating` tinyint DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ;
 
 -- --------------------------------------------------------
 
@@ -72,7 +87,8 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `product_name`, `description`, `price`, `discount`, `quantity`, `product_status`, `image1`, `image2`, `image3`, `category_id`, `created_at`) VALUES
-(2, 'Dell XPS 13', 'Lightweight laptop with Intel Core i7 processor and premium build quality', 130, 40, 7, 'available', 'product-7.png', 'product-7.png', 'product-7.png', 4, '2025-12-25 21:48:34');
+(2, 'Dell XPS 13', 'Lightweight laptop with Intel Core i7 processor and premium build quality', 130, 40, 7, 'available', 'product-7.png', 'product-7.png', 'product-7.png', 4, '2025-12-25 21:48:34'),
+(18, 'LG', '', 130, 30, 30, 'available', 'product_69629a978f9658.78388183.png', 'product_69629a978fa6a9.95060646.png', 'product_69629a978fb203.88223574.png', 2, '2026-01-10 18:29:43');
 
 -- --------------------------------------------------------
 
@@ -117,9 +133,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `fullname`, `email`, `password`, `country`, `profile_image`, `status`, `roll_id`, `created_at`) VALUES
-(2, 'mo_alssdi', 'mo lassadi', 'muhamadalssadi@gmail.com', '$2y$10$0CBeqamnJIO34hvIVrfA6u4zgs73JtZDXA44iHnHvmmyLmFgqQKo.', 'Yemen', '1767560361_mohammed2.jpg', 0, 2, '2026-01-04 20:59:43'),
-(3, '38370028918', 'lassadi', 'muhamadalssadi@gmail.com', '$2y$10$3ygsRZklOqvc7duDq7rJvernMKnh.byRvLvKTQFyloeJfTSNK4uCy', 'Saudi Arabia', '1767560510_لقطة شاشة 2025-10-15 190005.png', 0, 2, '2026-01-04 21:03:14'),
-(4, 'mo_alssdi', 'mo lassadi', 'muhamadalssadi@gmail.com', '$2y$10$38uphFkuM5vLbs5WfEp19OkWrJhGtCTFrWHrcTQg7.GrlFenscrma', 'Yemen', '1767810344_avatar-01.jpg', 0, 2, '2026-01-07 18:32:12');
+(10, 'mo_alssdi', 'mohammed lassadi', 'muhamadalssadi@gmail.com', '$2y$10$4rJEhsPmdhQyDTZyLHgLROpOPoNZt3Iw5gzBkTt1qZzk2yvsFWGYW', 'Yemen', '1768052321_avatar-01.jpg', 0, 2, '2026-01-10 13:39:07'),
+(11, 'Hanan', 'Hanan Ali', '25164483@su.edu.ye', '$2y$10$YRs3KdZRjwbPM2XktnbS4.bkwTTR4fmoFbznf4918O4.CxsO3gxtG', 'Jordan', '1768053785_item-cart-01.jpg', 0, 2, '2026-01-10 14:05:06'),
+(12, 'mohammed', 'mo lassadi', 'muhamadalssadi@gmail.com', '$2y$10$MH3uOmTS5dR6pWIS3O3kzeZoomn8RQL3B.5IVTyQpvgS5JiOOBjfe', 'Yemen', '1768061077_banner-05.jpg', 0, 2, '2026-01-10 16:05:28');
 
 --
 -- Indexes for dumped tables
@@ -130,6 +146,14 @@ INSERT INTO `users` (`id`, `username`, `fullname`, `email`, `password`, `country
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `comments`
+--
+ALTER TABLE `comments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `products`
@@ -162,10 +186,16 @@ ALTER TABLE `categories`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT for table `comments`
+--
+ALTER TABLE `comments`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `roll`
@@ -177,11 +207,18 @@ ALTER TABLE `roll`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `comments`
+--
+ALTER TABLE `comments`
+  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `products`

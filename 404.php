@@ -1,7 +1,6 @@
  <?php
  http_response_code(404);
   include('include/template/Header.php')?>
-  
     <!-- 404 Start -->
     <div class="container-fluid py-5 mt-5 mb-5">
         <div class="container py-5 text-center">
