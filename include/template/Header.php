@@ -172,10 +172,7 @@
                                     </li>
                                 </ul>
                             </div>
-
-                        <?php endif; ?>
-
-                        <!-- Cart -->
+      <!-- Cart -->
                         <a href="cart.php" class="btn btn-outline-secondary position-relative">
                             <i class="fa fa-shopping-cart"></i>
                             <span
@@ -183,6 +180,9 @@
                                 <?php 1; ?>1
                             </span>
                         </a>
+                        <?php endif; ?>
+
+                  
 
                         <!-- Login Button -->
                         <?php if (! isset($_SESSION['user_id'])): ?>
