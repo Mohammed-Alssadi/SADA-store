@@ -2,54 +2,8 @@
     require_once "include/db_connect.php";
 
     if (! session_id()) {
-        session_start();
+    session_start();
     }
-    $emailError = $passwordError = $loginError = '';
-    $email      = '';
-
-    $showLoginModal = true;
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $email    = trim($_POST['email'] ?? '');
-        $password = trim($_POST['password'] ?? '');
-
-        if (! $email) {
-            $emailError = 'Email is required';
-        } elseif (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $emailError = 'Invalid email';
-        }
-
-        if (! $password) {
-            $passwordError = 'Password is required';
-        }
-
-        if (! $emailError && ! $passwordError) {
-
-            $stmt = $conn->prepare(
-                "SELECT id, password, profile_image FROM users WHERE email = :email"
-            );
-            $stmt->execute(['email' => $email]);
-            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            foreach ($users as $user) {
-                if (password_verify($password, $user['password'])) {
-                    session_regenerate_id(true);
-                    $_SESSION['user_id']       = $user['id'];
-                    $_SESSION['profile_image'] = $user['profile_image'];
-
-                    header('Location: settings.php');
-                    exit;
-                }
-            }
-
-            $loginError = 'Invalid email or password.';
-        }
-
-        if ($emailError || $passwordError || $loginError) {
-            $showLoginModal = true;
-        }
-    }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -86,12 +40,11 @@
     <link href="assets/css/style.css" rel="stylesheet">
     <link href="assets/css/product-card.css" rel="stylesheet">
     <link href="assets/css/category-section.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<style>
 
-</style>
 
-<body>
+<body class="min-vh-100 d-flex flex-column">
 
     <!-- Spinner Start -->
     <div id="spinner"
@@ -189,18 +142,23 @@
 
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
                                     <li>
-                                        <a class="dropdown-item d-flex align-items-center" href="profile.php">
+                                          <?php if (isset($_SESSION['roll_id']) && $_SESSION['roll_id'] == 1): ?>
+                                     <li>
+                                      
+                                        <a class="dropdown-item d-flex align-items-center" href="admin/index.php">
+                                            <i class=" fa fa-user-shield me-2 text-secondary"></i>
+                                           dashbord
+                                        </a>
+                                    </li>
+                                    <?php endif; ?>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center" href="settings.php">
                                             <i class="fa fa-user-circle me-2 text-secondary"></i>
                                             Profile
                                         </a>
                                     </li>
 
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center" href="settings.php">
-                                            <i class="fa fa-cog me-2 text-secondary"></i>
-                                            Settings
-                                        </a>
-                                    </li>
+                               
 
                                     <li>
                                         <hr class="dropdown-divider">
@@ -217,7 +175,6 @@
 
                         <?php endif; ?>
 
-
                         <!-- Cart -->
                         <a href="cart.php" class="btn btn-outline-secondary position-relative">
                             <i class="fa fa-shopping-cart"></i>
@@ -229,13 +186,11 @@
 
                         <!-- Login Button -->
                         <?php if (! isset($_SESSION['user_id'])): ?>
-                            <button class="btn btn-primary fw-semibold d-none d-md-inline-block" data-bs-toggle="modal" data-bs-target="#login">
-                                Login
-                            </button>
+                            <a href="login.php" class="btn btn-primary fw-semibold d-none d-md-inline-block">Login</a>
                         <?php else: ?>
-                            <a href="logout.php" class="btn btn-outline-secondary fw-semibold d-none d-md-inline-block">
+                            <button onclick="confirmLogout()" class="btn btn-outline-secondary fw-semibold d-none d-md-inline-block">
                                 Logout
-                            </a>
+                            </button>
                         <?php endif; ?>
 
                         <!-- Mobile Menu -->
@@ -263,7 +218,7 @@
                         <a class="nav-link text-dark" href="contact.php">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" data-bs-toggle="modal" data-bs-target="#login">
+                        <a class="nav-link text-dark" href="login.php">
                             Login
                         </a>
                     </li>
@@ -273,80 +228,26 @@
 
         </div>
     </div>
-    <!-- Login Modal -->
-    <div class="modal fade" id="login" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-3 shadow-lg ">
-
-
-                <div class="modal-body p-4 p-md-5">
-
-                    <!-- Avatar -->
-                    <div class="text-center mb-4">
-                        <img src="img/user.png"
-                            class="rounded-circle"
-                            width="90"
-                            height="90"
-                            alt="User">
-                    </div>
-
-                    <!-- Title -->
-                    <h4 class="text-center mb-4 fw-bold">Sign In</h4>
-
-                    <!-- Form -->
-                    <form method="post">
-
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input
-                                type="email"
-                                name="email"
-                                class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <?php echo $emailError ? 'is-invalid' : '' ?>"
-                                value="<?php echo htmlspecialchars($email) ?>">
-                            <?php if ($emailError): ?>
-                                <div class="invalid-feedback"><?php echo $emailError ?></div>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input
-                                type="password"
-                                name="password"
-                                class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <?php echo $passwordError ? 'is-invalid' : '' ?>">
-                            <?php if ($passwordError): ?>
-                                <div class="invalid-feedback"><?php echo $passwordError ?></div>
-                            <?php endif; ?>
-                        </div>
-
-                        <?php if ($loginError): ?>
-                            <div class="alert alert-danger text-center">
-                                <?php echo $loginError ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <button class="btn btn-primary w-100">Login</button>
-
-                    </form>
-
-                    <!-- Footer -->
-                    <div class="text-center mt-4">
-                        <small class="text-muted">
-                            Don't have an account?
-                            <a href="register.php" class="text-decoration-none fw-semibold">Create one</a>
-                        </small>
-                    </div>
-
-                </div>
-                <!-- Close Button -->
-                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
-
     <!-- ======= HEADER END ======= -->
 
     <script>
+        function confirmLogout() {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will be logged out of your account.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, logout',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'logout.php';
+        }
+    });
+}
         // تحديث الوقت الحالي كل ثانية
         function updateTime() {
             const now = new Date();

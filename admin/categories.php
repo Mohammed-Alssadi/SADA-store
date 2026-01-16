@@ -11,10 +11,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="dashboard-container p-4">
                 <div class="container-fluid">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 data-key="manageCategories">إدارة الفئات</h4>
-                        <a href="add_category.php" class="btn btn-primary"><i class="fas fa-plus me-2"></i><span data-key="addNewCat">إضافة فئة جديدة</span></a>
-                    </div>
+             
 
                     <div class="table-card">
                         <div class="filter-bar">
@@ -23,11 +20,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <input type="text" placeholder="البحث عن فئة..." data-key="searchCat">
                             </div>
                             <div class="d-flex gap-2">
-                                <select class="form-select" style="width: 150px;">
-                                    <option value="" data-key="allStatus">كل الحالات</option>
-                                    <option value="active" data-key="statusActive">نشط</option>
-                                    <option value="inactive" data-key="statusInactive">غير نشط</option>
-                                </select>
+                                  <a href="add_category.php" class="btn btn-primary text-light"><i class="fas fa-plus me-2"></i><span data-key="addNewCat">إضافة فئة جديدة</span></a>
                             </div>
                         </div>
 

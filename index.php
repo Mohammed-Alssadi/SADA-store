@@ -1,7 +1,7 @@
  <?php
 
      require_once "include/db_connect.php";
-     $sql_get      = "SELECT category_name, category_img FROM categories ";
+     $sql_get      = "SELECT id, category_name, category_img FROM categories ";
      $get_category = $conn->prepare($sql_get);
      $get_category->execute();
      $categories   = $get_category->fetchAll();
@@ -145,7 +145,7 @@
                  <?php foreach ($categories as $category): ?>
                      <div class="item my-5 px-2">
                          <div class=" pt-5 wow fadeInDown" data-wow-delay="0.1s">
-                             <a href="#!" class="ezy__epcategory9-item  shadow">
+                             <a href="shop.php?category=<?php echo $category['id']; ?>" class="ezy__epcategory9-item  shadow">
                                  <div class="ezy__epcategory9-img shadow-sm overflow-hidden">
                                      <img src="uploads/categories/<?php echo $category['category_img']; ?>" alt="" />
                                  </div>

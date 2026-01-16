@@ -1,5 +1,5 @@
 <!-- ======= Elegant Professional Footer ======= -->
-<footer class="bg-secondary text-light pt-5 ">
+<footer class="bg-secondary text-light mt-auto ">
 
     <div class="container">
         <div class="row g-4 align-items-center">
@@ -102,25 +102,7 @@
     <!-- Custom Script for Modal Close -->
 
 
-    <script>
-        $(document).ready(function() {
-            // fix selector: modal id is '#login'
-            // $('#login .btn-close').on('click', function() {
-            //     $('#login').modal('hide');
-            // });
-
-            // If server-side validation produced errors, open the login modal.
-            <?php if (
-                    (isset($showLoginModal) && $showLoginModal) &&
-                    ((isset($emailError) && $emailError) ||
-                        (isset($passwordError) && $passwordError) ||
-                        (isset($loginError) && $loginError))
-            ): ?>
-                var myModal = new bootstrap.Modal(document.getElementById('login'));
-                myModal.show();
-            <?php endif; ?>
-        });
-    </script>
+ 
 </body>
 
 </html>

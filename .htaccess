@@ -2,4 +2,5 @@
 Options -Indexes
 
 # Custom 404 Page
-ErrorDocument 404 /electro-store/404.php
+ErrorDocument 404 /sa-store/404.php
+

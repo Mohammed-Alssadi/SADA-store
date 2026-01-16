@@ -1,11 +1,11 @@
  <?php
-    session_start();
-    include 'include/db_connect.php';
-    if (! isset($_GET['id']) || ! is_numeric($_GET['id'])) {
-        die("Invalid product ID");
-    }
+     session_start();
+     include 'include/db_connect.php';
+     if (! isset($_GET['id']) || ! is_numeric($_GET['id'])) {
+         die("Invalid product ID");
+     }
 
-    $id = $_GET['id'];
+     $id = $_GET['id'];
 
      $stmt = $conn->prepare("SELECT p.*, c.category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.id = ? AND p.product_status = 'available'");
      $stmt->execute([$id]);
@@ -21,36 +21,35 @@
      });
 
      // جلب التعليقات
-     $stmt_comments = $conn->prepare("SELECT c.comment, c.rating, c.created_at, u.fullname, u.profile_image FROM comments c JOIN users u ON c.user_id = u.id WHERE c.product_id = ? ORDER BY c.created_at DESC");
+     $stmt_comments = $conn->prepare("SELECT c.comment, c.rating, c.created_at, u.username, u.profile_image FROM comments c JOIN users u ON c.user_id = u.id WHERE c.product_id = ? ORDER BY c.created_at DESC");
      $stmt_comments->execute([$id]);
      $comments = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
 
      // معالجة إرسال التعليق
      $comment_errors  = [];
      $comment_success = false;
- 
+
      if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_comment'])) {
-     $showLoginModal = false;
-        $rating       = intval($_POST['rating'] ?? 0);
-        $comment_text = trim($_POST['comment'] ?? '');
+         $showLoginModal = false;
+         $rating         = intval($_POST['rating'] ?? 0);
+         $comment_text   = trim($_POST['comment'] ?? '');
 
-        if ($rating < 1 || $rating > 5) {
-            $comment_errors[] = 'Rating must be between 1 and 5.';
-        }
-        if (empty($comment_text)) {
-            $comment_errors[] = 'Comment cannot be empty.';
-        }
-
-        if (empty($comment_errors)) {
-            $stmt_insert = $conn->prepare("INSERT INTO comments (product_id, user_id, comment, rating) VALUES (?, ?, ?, ?)");
-            $stmt_insert->execute([$id, $_SESSION['user_id'], $comment_text, $rating]);
-            $comment_success = true;
-            // إعادة تحميل الصفحة لعرض التعليق الجديد
-            header("Location: single.php?id=$id");
-            exit;
-        }
+         if ($rating < 1 || $rating > 5) {
+        $comment_errors[] = 'Rating must be between 1 and 5.';
          }
-     
+         if (empty($comment_text)) {
+        $comment_errors[] = 'Comment cannot be empty.';
+         }
+
+         if (empty($comment_errors)) {
+        $stmt_insert = $conn->prepare("INSERT INTO comments (product_id, user_id, comment, rating) VALUES (?, ?, ?, ?)");
+        $stmt_insert->execute([$id, $_SESSION['user_id'], $comment_text, $rating]);
+        $comment_success = true;
+        // إعادة تحميل الصفحة لعرض التعليق الجديد
+        header("Location: single.php?id=$id");
+        exit;
+         }
+     }
 
      include 'include/template/Header.php';
  ?>
@@ -131,12 +130,12 @@
                          <?php foreach ($comments as $comment): ?>
                              <div class="d-flex mb-4">
                                  <img src="uploads/users/<?php echo htmlspecialchars($comment['profile_image'] ?: 'user.png'); ?>" class="img-fluid rounded-circle p-3"
-                                     style="width: 100px; height: 100px;" alt="">
+                                     style="width: 80px; height: 80px;" alt="">
                                  <div class="">
                                      <p class="mb-2" style="font-size: 14px;"><?php echo htmlspecialchars(date('F j, Y', strtotime($comment['created_at']))); ?></p>
-                                     <div class=" justify-content-between">
-                                         <h5><?php echo htmlspecialchars($comment['fullname']); ?></h5>
-                                         <div class="d-flex mb-3">
+                                     <div class=" d-flex justify-content-between  align-items-center">
+                                         <h5><?php echo htmlspecialchars($comment['username']); ?></h5>
+                                         <div class="d-flex mb-2 ms-5 ">
                                              <?php for ($i = 1; $i <= 5; $i++): ?>
                                                  <i class="fa fa-star <?php echo $i <= $comment['rating'] ? 'text-warning' : 'text-muted'; ?>"></i>
                                              <?php endfor; ?>
@@ -148,7 +147,7 @@
                          <?php endforeach; ?>
                      <?php endif; ?>
                  </div>
-            
+
              </div>
          </div>
          <div class="mt-5">
@@ -189,7 +188,7 @@
              <?php endif; ?>
              <?php if (! isset($_SESSION['user_id'])): ?>
                  <p>You must be logged in to submit a review.</p>
-                 <button class="btn btn-primary" data-bs-toggle="modal" data-key="login"   data-bs-target="#login">Login to Review</button>
+                 <a href="login.php" class="btn btn-primary">Login to Review</a>
              <?php endif; ?>
          </div>
      </div>
