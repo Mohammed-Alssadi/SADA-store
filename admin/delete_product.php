@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
+    header("Location: ../404.php");
+    exit;
+}
 include "../include/db_connect.php";
 
 if (!isset($_GET['id'])) {

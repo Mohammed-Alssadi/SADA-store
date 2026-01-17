@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
+    header("Location: ../index.php");
+    exit;
+}
 require '../include/db_connect.php';
 
 if (!isset($_GET['id'])) {
@@ -8,7 +13,7 @@ if (!isset($_GET['id'])) {
 
 $id = (int) $_GET['id'];
 
-// جلب بيانات الفئة
+
 try {
     $stmt = $conn->prepare('SELECT * FROM categories WHERE id = :id');
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);

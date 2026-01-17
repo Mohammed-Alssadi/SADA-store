@@ -1,7 +1,12 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
+    header("Location: ../404.php");
+    exit;
+}
 require '../include/db_connect.php';
 
-/* التحقق من وجود ID */
+
 if (!isset($_GET['id'])) {
     header("Location: ProductManagement.php");
     exit;
@@ -9,7 +14,7 @@ if (!isset($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-/* جلب بيانات المنتج */
+
 try {
     $stmt = $conn->prepare('SELECT * FROM products WHERE id = :id');
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);

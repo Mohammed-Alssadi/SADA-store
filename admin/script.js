@@ -5,7 +5,7 @@ const translations = {
         products: 'إدارة السلع',
         categories: 'الفئات',
         orders: 'الطلبات',
-        messages: 'الرسائل',
+        Reviws: 'التقييمات',
         reports: 'التقارير',
         offers: 'العروض',
         reviews: 'التقييمات',
@@ -27,10 +27,10 @@ const translations = {
         products: 'Products',
         categories: 'Categories',
         orders: 'Orders',
-        messages: 'Messages',
+        messages: '',
         reports: 'Reports',
         offers: 'Offers',
-        reviews: 'Reviews',
+        reviews: 'reviews',
         inventory: 'Inventory',
         customers: 'Customers',
         settings: 'Settings',
@@ -45,6 +45,22 @@ const translations = {
         viewAll: 'View All Notifications'
     }
 };
+
+// Additional dashboard-specific keys
+translations.ar.systemOverview = 'نظرة عامة على النظام';
+translations.en.systemOverview = 'System Overview';
+translations.ar.liveData = 'بيانات مباشرة من قاعدة البيانات';
+translations.en.liveData = 'Live data from database';
+translations.ar.productStatus = 'حالة المنتج';
+translations.en.productStatus = 'Product Status';
+translations.ar.usersVsComments = 'المستخدمون مقابل التعليقات';
+translations.en.usersVsComments = 'Users vs Comments';
+translations.ar.available = 'متاح';
+translations.en.available = 'Available';
+translations.ar.unavailable = 'غير متاح';
+translations.en.unavailable = 'Unavailable';
+translations.ar.comments = 'التعليقات';
+translations.en.comments = 'Comments';
 
 const addProductTranslations = {
     ar: {
@@ -68,7 +84,9 @@ const addProductTranslations = {
         uploadImg3: 'الصورة 3',
         btnReset: 'إعادة تعيين',
         btnSubmit: 'إضافة المنتج',
-        searchPlaceholder: 'البحث...'
+        searchPlaceholder: 'البحث...',
+        systemOverview: 'نظرة عامة على النظام',
+        productStatus: 'حالة المنتج'
     },
     en: {
         addProduct: 'Add Product',
@@ -91,13 +109,53 @@ const addProductTranslations = {
         uploadImg3: 'Image 3',
         btnReset: 'Reset',
         btnSubmit: 'Add Product',
-        searchPlaceholder: 'Search...'
+        searchPlaceholder: 'Search...',
+        systemOverview : 'System Overview',
+        productStatus : 'Product Status'
+
     }
 };
 
 const addCatTranslations = {
     ar: { addNewCat: 'إضافة فئة جديدة', cancel: 'إلغاء', labelName: 'اسم الفئة', labelStatus: 'الحالة', labelDesc: 'الوصف', labelImg: 'صورة الفئة', uploadImg: 'اختر صورة', save: 'حفظ الفئة', statusActive: 'نشط', statusInactive: 'غير نشط' },
     en: { addNewCat: 'Add New Category', cancel: 'Cancel', labelName: 'Category Name', labelStatus: 'Status', labelDesc: 'Description', labelImg: 'Category Image', uploadImg: 'Choose Image', save: 'Save Category', statusActive: 'Active', statusInactive: 'Inactive' }
+};
+
+const addUserTranslations = {
+    ar: {
+        addNewCustomer: 'إضافة عميل جديد',
+        cancel: 'إلغاء',
+        personalInfo: 'المعلومات الشخصية',
+        fullName: 'الاسم الكامل',
+        userName: 'اسم المستخدم',
+        colEmail: 'البريد الإلكتروني',
+        password: 'كلمة المرور',
+        country: 'الدولة',
+        profileImage: 'الصورة الشخصية',
+        status: 'الحالة',
+        statusActive: 'نشط',
+        statusBlocked: 'محظور',
+        save: 'حفظ البيانات',
+        success_msg: 'تمت العملية بنجاح!',
+        error_msg: 'حدث خطأ، يرجى المحاولة مرة أخرى.'
+    },
+    en: {
+        addNewCustomer: 'Add New Customer',
+        cancel: 'Cancel',
+        personalInfo: 'Personal Information',
+        fullName: 'Full Name',
+        userName: 'Username',
+        colEmail: 'Email',
+        password: 'Password',
+        country: 'Country',
+        profileImage: 'Profile Image',
+        status: 'Status',
+        statusActive: 'Active',
+        statusBlocked: 'Blocked',
+        save: 'Save Data',
+        success_msg: 'Operation successful!',
+        error_msg: 'An error occurred, please try again.'
+    }
 };
 
 const manageTranslations = {
@@ -114,6 +172,7 @@ const manageTranslations = {
         colActions: 'الإجراءات',
         statusActive: 'نشط',
         statusInactive: 'غير نشط'
+    
     },
     en: {
         manageProducts: 'Manage Products',
@@ -563,6 +622,8 @@ const reportsTranslations = {
     }
 };
 
+
+
 let currentLanguage = localStorage.getItem('language') || 'ar';
 let currentTheme = localStorage.getItem('theme') || 'light';
 
@@ -647,6 +708,7 @@ function updatePageContent() {
     const merged = Object.assign({}, base,
         addProductTranslations[lang] || {},
         addCatTranslations[lang] || {},
+        addUserTranslations[lang] || {},
         manageTranslations[lang] || {},
         ordersTranslations[lang] || {},
         reportsTranslations[lang] || {},
@@ -719,7 +781,70 @@ function switchTab(tabName, evt) {
 document.addEventListener('DOMContentLoaded', () => {
     changeLanguage(currentLanguage);
     changeTheme(currentTheme);
+
+    // Page-specific: add_user form validation
+    const userForm = document.getElementById('userForm');
+    if (userForm) {
+        userForm.addEventListener('submit', function (e) {
+            const fullname = this.fullname.value.trim();
+            const username = this.username.value.trim();
+            const email = this.email.value.trim();
+            if (!fullname || !username || !email) {
+                e.preventDefault();
+                alert('الرجاء تعبئة الحقول المطلوبة بشكل صحيح.');
+                return false;
+            }
+            const re = /^(([^<>()[\\]\\.,;:\s@\"]+(\\.[^<>()[\\]\\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\\]\\.,;:\s@\"]+\.)+[^<>()[\\]\\.,;:\s@\"]{2,})$/i;
+            if (!re.test(email)) {
+                e.preventDefault();
+                alert('أدخل بريدًا إلكترونيًا صالحًا.');
+                return false;
+            }
+        });
+    }
+
+    // Dashboard charts rendering (if dashboardData provided by page)
+    if (window.dashboardData) {
+        try {
+            const lang = currentLanguage || localStorage.getItem('language') || 'ar';
+            const t = translations[lang] || {};
+
+            const prodEl = document.getElementById('productChart');
+            if (prodEl && window.Chart) {
+                new Chart(prodEl, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [t.available || 'Available', t.unavailable || 'Unavailable'],
+                        datasets: [{
+                            data: [window.dashboardData.available, window.dashboardData.unavailable],
+                            backgroundColor: ['#0d6efd', '#dc3545']
+                        }]
+                    }
+                });
+            }
+
+            const ucEl = document.getElementById('userCommentChart');
+            if (ucEl && window.Chart) {
+                new Chart(ucEl, {
+                    type: 'bar',
+                    data: {
+                        labels: [t.users || 'Users', t.comments || 'Comments'],
+                        datasets: [{
+                            data: [window.dashboardData.users, window.dashboardData.comments],
+                            backgroundColor: ['#198754', '#ffc107']
+                        }]
+                    }
+                });
+            }
+        } catch (e) {
+            console.error('Dashboard charts error:', e);
+        }
+    }
 });
+
+
+
+
 
 
 

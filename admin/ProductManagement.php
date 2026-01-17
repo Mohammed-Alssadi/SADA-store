@@ -1,5 +1,10 @@
 
 <?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
+    header("Location: ../index.php");
+    exit;
+}
     include "../include/db_connect.php";
 
     $sql = "SELECT

@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
+    header("Location: ../404.php");
+    exit;
+}
     require "../include/db_connect.php";
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
