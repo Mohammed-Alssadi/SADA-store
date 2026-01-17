@@ -253,7 +253,7 @@ include 'include/template/Header.php';
     }
 </style>
 <script>
-    // وظيفة لمعاينة الصورة فور اختيارها
+   
     function previewImage(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();

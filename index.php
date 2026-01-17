@@ -31,7 +31,7 @@
              <div class="header-carousel owl-carousel bg-light rounded p-4">
                  <div class="row g-4 header-carousel-item align-items-center ">
                      <div class="col-xl-6 carousel-img wow fadeInLeft" data-wow-delay="0.1s">
-                         <img src="img/carousel-1.png" class="img-fluid w-100" alt="Image">
+                         <img src="img/image1.png" class="img-fluid w-75" alt="Image">
                      </div>
                      <div class="col-xl-6 carousel-content p-4 wow fadeInRight" data-wow-delay="0.1s">
                          <h4 class="text-uppercase fw-bold mb-4 "
@@ -45,7 +45,7 @@
                  </div>
                  <div class="row g-4 header-carousel-item align-items-center">
                      <div class="col-xl-6 carousel-img wow fadeInRight" data-wow-delay="0.1s">
-                         <img src="img/carousel-2.png" class="img-fluid w-100" alt="Image">
+                         <img src="img/carousel-1.png" class="img-fluid w-100" alt="Image">
                      </div>
                      <div class="col-xl-6 carousel-content p-4">
                          <h4 class="text-uppercase fw-bold mb-4 wow fadeInLeft" data-wow-delay="0.1s"
@@ -374,16 +374,16 @@
  <!-- Product Banner Start -->
  <div class="container-fluid py-5">
      <div class="container">
-         <div class="row g-4">
+         <div class="row g-4 ">
              <div class="col-lg-6 wow fadeInLeft" data-wow-delay="0.1s">
                  <a href="#">
                      <div class="bg-primary rounded position-relative">
-                         <img src="img/product-banner.jpg" class="img-fluid w-100 rounded" alt="">
+                         <img src="img/Smart Watch FitBand 2.webp" class="img-fluid w-100 rounded" alt="">
                          <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center rounded p-4"
                              style="background: rgba(0, 0, 0, 0.110);">
-                             <h3 class="display-5 text-primary">EOS Rebel <br> <span>T7i Kit</span></h3>
-                             <p class="fs-4 text-muted">$899.99</p>
-                             <a href="#" class="btn btn-outline-secondary rounded-pill align-self-start py-2 px-4">Shop Now</a>
+                             <h3 class="display-5 text-dark">SMART <br> <span class="text-light">watch</span></h3>
+                             <p class="fs-4 text-primary">$899.99</p>
+                             <a href="#" class="btn btn-dark rounded-pill align-self-start py-2 px-4">Shop Now</a>
                          </div>
                      </div>
                  </a>
@@ -391,7 +391,7 @@
              <div class="col-lg-6 wow fadeInRight" data-wow-delay="0.2s">
                  <a href="#">
                      <div class="text-center  rounded position-relative">
-                         <img src="img/product-banner-2.jpg" class="img-fluid w-100" alt="">
+                         <img src="img/image.png" class="img-fluid w-100" alt="">
                          <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center rounded p-4"
                              style="background: rgba(0, 0, 0, 0.100);">
                              <h2 class="display-2 text-secondary">SALE</h2>
