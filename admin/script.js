@@ -24,7 +24,7 @@ const translations = {
     },
     en: {
         dashboard: 'Dashboard',
-        products: 'Product Management',
+        products: 'Products',
         categories: 'Categories',
         orders: 'Orders',
         messages: 'Messages',

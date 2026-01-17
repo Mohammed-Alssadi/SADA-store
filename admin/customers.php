@@ -11,10 +11,10 @@ include("header.php");
                 <div class="container-fluid">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 data-key="customers">إدارة العملاء</h4>
-                        <div class="search-box m-0" style="min-width: 300px;">
+                        <!-- <div class="search-box m-0" style="min-width: 300px;">
                             <i class="fas fa-search"></i>
                             <input type="text" placeholder="البحث عن عميل..." data-key="searchCustomer">
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="customer-card">

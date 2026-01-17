@@ -1,11 +1,13 @@
 <?php
-    session_start();
+require 'auth/auth.php';
+guestOnly();
+    
     require 'vendor/autoload.php';
     require 'include/functions.php';
     $errors         = [];
     $profile_image  = 'user.png';
     $success        = false;
-    $showLoginModal = false;
+
 
     function clean($v)
     {
@@ -98,7 +100,7 @@
                     exit;
                 } else {
                     $errors['email'] = 'Failed to send verification email';
-                    $success         = false;
+                    $success = false;
                 }
 
             }
@@ -106,8 +108,7 @@
         }
     }
     include 'include/template/Header.php';
-    // إخفاء مودال تسجيل الدخول في صفحة التسجيل
-    $showLoginModal = false;
+
 ?>
 
 <div class="container d-flex justify-content-center align-items-center  my-3">

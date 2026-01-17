@@ -1,10 +1,7 @@
- <?php include('include/template/Header.php')?>
-
-
-
- 
-
-
+ <?php 
+ require 'auth/auth.php';
+authOnly();
+ include('include/template/Header.php')?>
 <!-- Checkout Page -->
 <div class="container py-5">
     <div class="row g-4">

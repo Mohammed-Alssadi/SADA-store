@@ -127,8 +127,8 @@ if (isset($_POST['update_product'])) {
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label" data-key="labelStatus">الحالة</label>
                                     <select name="product_status" class="form-select">
-                                        <option value="active" <?= ($product['product_status'] == 'active') ? 'selected' : '' ?>>نشط</option>
-                                        <option value="inactive" <?= ($product['product_status'] == 'inactive') ? 'selected' : '' ?>>غير نشط</option>
+                                        <option value="1" <?= ($product['product_status'] == 1) ? 'selected' : '' ?>>نشط</option>
+                                        <option value="0" <?= ($product['product_status'] == 0) ? 'selected' : '' ?>>غير نشط</option>
                                     </select>
                                 </div>
                                 <div class="col-12 mb-3">

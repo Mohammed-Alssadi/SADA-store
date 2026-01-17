@@ -1,7 +1,15 @@
  <?php
  http_response_code(404);
-  include('include/template/Header.php')?>
-  
+?>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Cairo:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- 404 Start -->
     <div class="container-fluid py-5 mt-5 mb-5">
         <div class="container py-5 text-center">
@@ -17,7 +25,5 @@
             </div>
         </div>
     </div>
-    <!-- 404 End -->
 
-       <!-- Footer Start -->
-    <?php include('include/template/Footer.php')?>
+   

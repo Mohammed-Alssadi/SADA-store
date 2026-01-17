@@ -30,7 +30,7 @@
 
     $params = [];
 
-    if ($selectedCategory) {
+    if (!is_null($selectedCategory)) {
         $sql .= " AND p.category_id = ?";
         $params[] = $selectedCategory;
     }

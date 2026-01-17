@@ -82,8 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'], $_POST['statu
                         <div class="mb-4">
                             <label class="form-label" data-key="labelStatus">الحالة</label>
                             <select name="status" class="form-select" required>
-                                <option value="active" <?php echo $categorie['category_status'] === '1' ? 'selected' : ''; ?>>نشط</option>
-                                <option value="inactive" <?php echo $categorie['category_status'] === '0' ? 'selected' : ''; ?>>غير نشط</option>
+                                <option value="1" <?php echo $categorie['category_status'] === 1 ? 'selected' : ''; ?>>نشط</option>
+                                <option value="0" <?php echo $categorie['category_status'] === 0 ? 'selected' : ''; ?>>غير نشط</option>
                             </select>
                         </div>
                     </div>
