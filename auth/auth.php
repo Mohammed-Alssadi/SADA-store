@@ -12,7 +12,7 @@ function guestOnly() {
 
 function authOnly() {
     if (!isset($_SESSION['user_id'])) {
-        header("Location: login.php");
+        header("Location: 404.php");
         exit;
     }
 }

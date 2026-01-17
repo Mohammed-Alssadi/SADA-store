@@ -100,9 +100,9 @@
                          </button>
                      </div>
                  </div>
-                 <a href="#"
-                     class="btn btn-primary border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i
-                         class="fa fa-shopping-bag me-2 text-white"></i> Add to cart</a>
+                 <button 
+                     class="btn btn-primary border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"  onclick="addToCart(<?= $product['id'] ?>)"><i
+                         class="fa fa-shopping-bag me-2 text-white "  ></i> Add to cart</button>
              </div>
          </div>
          <div class="col-lg-12">

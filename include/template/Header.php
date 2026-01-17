@@ -1,9 +1,15 @@
 <?php
-    require_once "include/db_connect.php";
-
-    if (! session_id()) {
+require_once "include/db_connect.php";
+require_once 'include/cart_functions.php';
+if (! session_id()) {
     session_start();
-    }
+}
+
+$cartCount = 0;
+
+if (isset($_SESSION['user_id'])) {
+    $cartCount = getCartCount($_SESSION['user_id']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -118,8 +124,8 @@
                 <div class="col-lg-3 col-md-4 col-6 order-2 order-md-3 text-end">
                     <div class="d-inline-flex align-items-center gap-2">
 
-                    <?php if (! empty($_SESSION['user_id'])):
-                    ?>
+                        <?php if (! empty($_SESSION['user_id'])):
+                        ?>
 
                             <!-- Account Dropdown -->
                             <div class="dropdown user-dropdown">
@@ -142,47 +148,46 @@
 
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
                                     <li>
-                                          <?php if (isset($_SESSION['roll_id']) && $_SESSION['roll_id'] == 1): ?>
-                                     <li>
-                                      
+                                        <?php if (isset($_SESSION['roll_id']) && $_SESSION['roll_id'] == 1): ?>
+                                    <li>
+
                                         <a class="dropdown-item d-flex align-items-center" href="admin/index.php">
                                             <i class=" fa fa-user-shield me-2 text-secondary"></i>
-                                           dashbord
+                                            dashbord
                                         </a>
                                     </li>
-                                    <?php endif; ?>
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center" href="settings.php">
-                                            <i class="fa fa-user-circle me-2 text-secondary"></i>
-                                            Profile
-                                        </a>
-                                    </li>
+                                <?php endif; ?>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="settings.php">
+                                        <i class="fa fa-user-circle me-2 text-secondary"></i>
+                                        Profile
+                                    </a>
+                                </li>
 
-                               
 
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
 
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center text-danger" href="logout.php">
-                                            <i class="fa fa-sign-out-alt me-2"></i>
-                                            Logout
-                                        </a>
-                                    </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center text-danger" href="logout.php">
+                                        <i class="fa fa-sign-out-alt me-2"></i>
+                                        Logout
+                                    </a>
+                                </li>
                                 </ul>
                             </div>
-      <!-- Cart -->
-                        <a href="cart.php" class="btn btn-outline-secondary position-relative">
-                            <i class="fa fa-shopping-cart"></i>
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info text-dark cart-badge">
-                                <?php 1; ?>1
-                            </span>
-                        </a>
+                            <!-- Cart -->
+                            <a href="cart.php" class="btn btn-outline-secondary position-relative">
+                                <i class="fa fa-shopping-cart"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info text-dark cart-badge">
+                                    <?= $cartCount ?>
+                                </span>
+                            </a>
                         <?php endif; ?>
 
-                  
+
 
                         <!-- Login Button -->
                         <?php if (! isset($_SESSION['user_id'])): ?>
@@ -232,22 +237,22 @@
 
     <script>
         function confirmLogout() {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will be logged out of your account.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Yes, logout',
-        cancelButtonText: 'Cancel',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = 'logout.php';
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will be logged out of your account.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, logout',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'logout.php';
+                }
+            });
         }
-    });
-}
         // تحديث الوقت الحالي كل ثانية
         function updateTime() {
             const now = new Date();

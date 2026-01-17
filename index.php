@@ -1,29 +1,29 @@
  <?php
 
-     require_once "include/db_connect.php";
-     $sql_get      = "SELECT id, category_name, category_img FROM categories ";
-     $get_category = $conn->prepare($sql_get);
-     $get_category->execute();
-     $categories   = $get_category->fetchAll();
-     $sql = "SELECT p.product_name, p.price, p.discount, p.image1, p.id, p.created_at, c.category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.product_status = 'available'";
-     $get_products = $conn->prepare($sql);
-     $get_products->execute();
-     $all_products = $get_products->fetchAll();
+    require_once "include/db_connect.php";
+    $sql_get      = "SELECT id, category_name, category_img FROM categories where category_status = 1";
+    $get_category = $conn->prepare($sql_get);
+    $get_category->execute();
+    $categories   = $get_category->fetchAll();
+    $sql = "SELECT p.product_name, p.price, p.discount, p.image1, p.id, p.created_at, c.category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.product_status = 'available' AND c.category_status = 1 LIMIT 8";
+    $get_products = $conn->prepare($sql);
+    $get_products->execute();
+    $all_products = $get_products->fetchAll();
 
-     // فلترة المنتجات
-     $new_products = array_filter($all_products, function ($product) {
-         $created_date = new DateTime($product['created_at']);
-         $now          = new DateTime();
-         $interval = $now->diff($created_date);
-         return $interval->days <= 30; // منتجات أحدث من 30 يوماً
-     });
+    // فلترة المنتجات
+    $new_products = array_filter($all_products, function ($product) {
+        $created_date = new DateTime($product['created_at']);
+        $now          = new DateTime();
+        $interval = $now->diff($created_date);
+        return $interval->days <= 2;
+    });
 
-     $featured_products = array_filter($all_products, function ($product) {
-         return $product['discount'] > 0;
-     });
+    $featured_products = array_filter($all_products, function ($product) {
+        return $product['discount'] > 20;
+    });
 
-     include 'include/template/Header.php';
- ?>
+    include 'include/template/Header.php';
+    ?>
  <!-- Carousel Start -->
  <div class="container-fluid  p-2">
      <div class="row g-0 justify-content-center ">
@@ -34,13 +34,21 @@
                          <img src="img/image1.png" class="img-fluid w-75" alt="Image">
                      </div>
                      <div class="col-xl-6 carousel-content p-4 wow fadeInRight" data-wow-delay="0.1s">
-                         <h4 class="text-uppercase fw-bold mb-4 "
-                             style="letter-spacing: 3px;">Save Up To A $400</h4>
-                         <h1 class="display-3 text-capitalize mb-4 " data-wow-delay="0.1s">On Selected
-                             Laptops & Desktop Or Smartphone</h1>
-                         <p class="text-dark wow fadeInRight" data-wow-delay="0.1s">Terms and Condition Apply</p>
+                         <h4 class="text-uppercase fw-bold mb-4"
+                             style="letter-spacing: 3px;">Limited Time Offer</h4>
+
+                         <h1 class="display-3 text-capitalize mb-4" data-wow-delay="0.1s">
+                             Discover Amazing Deals On Top Products
+                         </h1>
+
+                         <p class="text-dark wow fadeInRight" data-wow-delay="0.1s">
+                             Hurry Up Before The Offer Ends
+                         </p>
+
                          <a class="btn btn-primary rounded-pill py-3 px-5 wow fadeInRight" data-wow-delay="0.1s"
-                             href="#">Shop Now</a>
+                             href="#">
+                             Shop Now
+                         </a>
                      </div>
                  </div>
                  <div class="row g-4 header-carousel-item align-items-center">
@@ -49,12 +57,20 @@
                      </div>
                      <div class="col-xl-6 carousel-content p-4">
                          <h4 class="text-uppercase fw-bold mb-4 wow fadeInLeft" data-wow-delay="0.1s"
-                             style="letter-spacing: 3px;">Save Up To A $200</h4>
-                         <h1 class="display-3 text-capitalize mb-4 wow fadeInLeft" data-wow-delay="0.3s">On Selected
-                             Laptops & Desktop Or Smartphone</h1>
-                         <p class="text-dark wow fadeInRight" data-wow-delay="0.5s">Terms and Condition Apply</p>
-                         <a class="btn btn-primary rounded-pill py-3 px-5 " data-wow-delay="0.s"
-                             href="#">Shop Now</a>
+                             style="letter-spacing: 3px;">Special Weekend Sale</h4>
+
+                         <h1 class="display-3 text-capitalize mb-4 wow fadeInLeft" data-wow-delay="0.3s">
+                             Upgrade Your Style With Our Best Collections
+                         </h1>
+
+                         <p class="text-dark wow fadeInRight" data-wow-delay="0.5s">
+                             Exclusive Deals Available Today Only
+                         </p>
+
+                         <a class="btn btn-primary rounded-pill py-3 px-5" data-wow-delay="0.s"
+                             href="#">
+                             Explore Now
+                         </a>
                      </div>
                  </div>
              </div>
@@ -67,69 +83,69 @@
 
 
 
-<!-- Services Start -->
-<div class="container my-1 py-4">
-    <div class="row justify-content-center g-3">
+ <!-- Services Start -->
+ <div class="container my-1 py-4">
+     <div class="row justify-content-center g-3">
 
-        <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
-            <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
-                <div class="p-4">
-                    <div class="d-flex align-items-center">
-                        <i class="fa fa-sync-alt fa-2x text-primary"></i>
-                        <div class="ms-4">
-                            <h6 class="text-uppercase mb-2">Free Return</h6>
-                            <p class="mb-0">30 days money back guarantee!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+         <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
+             <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
+                 <div class="p-4">
+                     <div class="d-flex align-items-center">
+                         <i class="fa fa-sync-alt fa-2x text-primary"></i>
+                         <div class="ms-4">
+                             <h6 class="text-uppercase mb-2">Free Return</h6>
+                             <p class="mb-0">30 days money back guarantee!</p>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
 
-        <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.2s">
-            <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
-                <div class="p-4">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-life-ring fa-2x text-primary"></i>
-                        <div class="ms-4">
-                            <h6 class="text-uppercase mb-2">Support 24/7</h6>
-                            <p class="mb-0">We support online 24 hrs a day</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+         <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.2s">
+             <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
+                 <div class="p-4">
+                     <div class="d-flex align-items-center">
+                         <i class="fas fa-life-ring fa-2x text-primary"></i>
+                         <div class="ms-4">
+                             <h6 class="text-uppercase mb-2">Support 24/7</h6>
+                             <p class="mb-0">We support online 24 hrs a day</p>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
 
-        <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.4s">
-            <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
-                <div class="p-4">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-lock fa-2x text-primary"></i>
-                        <div class="ms-4">
-                            <h6 class="text-uppercase mb-2">Secure Payment</h6>
-                            <p class="mb-0">We Value Your Security</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+         <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.4s">
+             <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
+                 <div class="p-4">
+                     <div class="d-flex align-items-center">
+                         <i class="fas fa-lock fa-2x text-primary"></i>
+                         <div class="ms-4">
+                             <h6 class="text-uppercase mb-2">Secure Payment</h6>
+                             <p class="mb-0">We Value Your Security</p>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
 
-        <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.5s">
-            <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
-                <div class="p-4">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-blog fa-2x text-primary"></i>
-                        <div class="ms-4">
-                            <h6 class="text-uppercase mb-2">Online Service</h6>
-                            <p class="mb-0">Free return products in 30 days</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+         <div class="col-12 col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay="0.5s">
+             <div class="border border-primary rounded shadow-lg h-100" style="border-style: dashed;">
+                 <div class="p-4">
+                     <div class="d-flex align-items-center">
+                         <i class="fas fa-blog fa-2x text-primary"></i>
+                         <div class="ms-4">
+                             <h6 class="text-uppercase mb-2">Online Service</h6>
+                             <p class="mb-0">Free return products in 30 days</p>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
 
-    </div>
-</div>
-<!-- Services End -->
+     </div>
+ </div>
+ <!-- Services End -->
 
  <!-- Searvices End -->
 
@@ -253,10 +269,10 @@
 
                                  <!-- Actions -->
                                  <div class="product-actions mb-">
-                                     <a href="#" class="btn cart-btn btn-sm">
+                                     <button class="btn cart-btn btn-sm" onclick="addToCart(<?= $product['id'] ?>)">
                                          <span class="me-1"> Add to Cart </span>
                                          <i class="fas fa-cart-plus"></i>
-                                     </a>
+                                     </button>
 
                                      <a href="single.php?id=<?php echo $product['id']; ?>" class="btn btn-outline-primary btn-sm">
                                          <span class="me-1"> preview</span>
@@ -299,10 +315,10 @@
 
                                  <!-- Actions -->
                                  <div class="product-actions mb-">
-                                     <a href="#" class="btn cart-btn btn-sm">
+                                     <button class="btn cart-btn btn-sm" onclick="addToCart(<?= $product['id'] ?>)">
                                          <span class="me-1"> Add to Cart </span>
                                          <i class="fas fa-cart-plus"></i>
-                                     </a>
+                                     </button>
 
                                      <a href="single.php?id=<?php echo $product['id']; ?>" class="btn btn-outline-primary btn-sm">
                                          <span class="me-1"> preview</span>
@@ -345,10 +361,10 @@
 
                                  <!-- Actions -->
                                  <div class="product-actions mb-">
-                                     <a href="#" class="btn cart-btn btn-sm">
+                                     <button class="btn cart-btn btn-sm" onclick="addToCart(<?= $product['id'] ?>)">
                                          <span class="me-1"> Add to Cart </span>
                                          <i class="fas fa-cart-plus"></i>
-                                     </a>
+                                     </button>
 
                                      <a href="single.php?id=<?php echo $product['id']; ?>" class="btn btn-outline-primary btn-sm">
                                          <span class="me-1"> preview</span>
@@ -417,4 +433,4 @@
 
 
 
- <?php include 'include/template/Footer.php'?>
+ <?php include 'include/template/Footer.php' ?>

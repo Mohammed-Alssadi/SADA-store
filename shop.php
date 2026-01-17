@@ -134,10 +134,10 @@
 
                                  <!-- Actions -->
                                  <div class="product-actions mb-">
-                                     <a href="#" class="btn cart-btn btn-sm">
+                                   <button  class="btn cart-btn btn-sm"  onclick="addToCart(<?= $product['id'] ?>)">
                                          <span class="me-1"> Add to Cart </span>
                                          <i class="fas fa-cart-plus"></i>
-                                     </a>
+                                     </button>
 
                                      <a href="single.php?id=<?php echo $product['id']; ?>" class="btn btn-outline-primary btn-sm">
                                          <span class="me-1"> preview</span>
