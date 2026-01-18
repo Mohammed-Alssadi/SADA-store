@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
     header("Location: ../404.php");
@@ -16,9 +16,9 @@ $id = (int) $_GET['id'];
 
 try {
     $stmt = $conn->prepare('SELECT category_img FROM categories WHERE id = :id');
-    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-    $stmt->execute();
-    $p = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt->execute(array(':id' => $id));
+    
+    $p = $stmt->fetch();
 
     if ($p) {
         foreach (['category_img'] as $img) {

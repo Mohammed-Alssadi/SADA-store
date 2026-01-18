@@ -1,5 +1,10 @@
 <?php
 session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
+    header("Location: ../404.php");
+    exit;
+}
+
 require_once("../include/db_connect.php");
 include("header.php");
 
@@ -40,8 +45,9 @@ try {
                         <?php 
                             $img = !empty($user['profile_image']) ? $user['profile_image'] : 'https://via.placeholder.com/120';
                         ?>
-                        <img src="../uploads/users/<?php echo htmlspecialchars($img); ?>" class="profile-avatar rounded-circle mb-3" alt="User" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #f8f9fa;">
-                        <h5 class="mb-1"><?php echo htmlspecialchars($user['fullname']); ?></h5>
+                                                                <img src="../uploads/users/<?php echo !empty($user['profile_image']) ? ($user['profile_image']) : 'user.png'; ?>"
+ class="profile-avatar rounded-circle mb-3" alt="User" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #f8f9fa;">
+                        <h5 class="mb-1"><?php echo ($user['fullname']); ?></h5>
                         <?php if ($user['status'] == 1): ?>
                             <span class="badge bg-success-subtle text-success px-3" data-key="statusActive">نشط</span>
                         <?php else: ?>
@@ -49,9 +55,9 @@ try {
                         <?php endif; ?>
                     </div>
                     
-                    <div class="info-group mb-3">
+                    <div class="info-group mb-3">   
                         <div class="info-label text-muted small" data-key="userName">اسم المستخدم</div>
-                        <div class="info-value fw-bold"><?php echo htmlspecialchars($user['username']); ?></div>
+                        <div class="info-value fw-bold"><?php echo ($user['username']); ?></div>
                     </div>
 
                     <div class="info-group mb-3">

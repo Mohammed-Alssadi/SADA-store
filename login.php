@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$emailError && !$passwordError) {
 
         $stmt = $conn->prepare(
-            "SELECT id, password, profile_image, roll_id
+            "SELECT id, password,fullname, profile_image, roll_id
              FROM users
              WHERE email = :email
              LIMIT 1"
@@ -39,7 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $_SESSION['user_id']= $user['id'];
             $_SESSION['profile_image']= $user['profile_image'];
-            $_SESSION['roll_id']       = $user['roll_id'];
+            $_SESSION['roll_id'] = $user['roll_id'];
+            $_SESSION['usename'] = $user['fullname'];
 
             $loginSuccess = true;
             $redirectUrl  = ($user['roll_id'] == 1)

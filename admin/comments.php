@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
 include("../include/db_connect.php");
 include("header.php");
 
-/* جلب التعليقات مع المستخدم والمنتج */
 $sql = "
 SELECT 
     c.id,
@@ -25,7 +24,7 @@ ORDER BY c.created_at DESC
 
 $stmt = $conn->prepare($sql);
 $stmt->execute();
-$comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$comments = $stmt->fetchAll();
 ?>
 
 <div class="container py-4">
@@ -52,11 +51,11 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <tr>
 <td>
-    <img src="../uploads/users/<?= htmlspecialchars($row['profile_image'] ?: 'user.png') ?>"
+    <img src="../uploads/users/<?= ($row['profile_image'] ?: 'user.png') ?>"
          width="40" height="40"
          class="rounded-circle me-2"
          style="object-fit:cover;">
-    <?= htmlspecialchars($row['username']) ?>
+    <?= ($row['username']) ?>
 </td>
 
 <td>

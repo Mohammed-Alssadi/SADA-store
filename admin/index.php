@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
 require_once "../include/db_connect.php";
 include "header.php";
 
-/* ===== Dynamic Statistics ===== */
+
 $products     = $conn->query("SELECT COUNT(*) FROM products")->fetchColumn();
 $categories   = $conn->query("SELECT COUNT(*) FROM categories")->fetchColumn();
 $users        = $conn->query("SELECT COUNT(*) FROM users")->fetchColumn();
@@ -24,7 +24,7 @@ $unavailable  = $conn->query("SELECT COUNT(*) FROM products WHERE product_status
 <div class="container-fluid py-5">
 <style>
     /* Page-specific typography improvements */
-    .container-fluid h2 { font-family: 'Cairo', Roboto, sans-serif; font-size: 33px; }
+    .container-fluid h2 { font-family: 'Cairo', Roboto, sans-serif; font-size: 33px ;}
     .container-fluid p { font-size: 15px; color: #6d7d8b; font-weight: 600;}
     .card .fw-bold { font-size: 20px; }
     .card p.text-muted { font-size: 18px; color: #4c7599; }

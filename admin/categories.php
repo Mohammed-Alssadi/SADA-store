@@ -9,7 +9,7 @@ include "header.php";
 include "../include/db_connect.php";
 
 $stmt = $conn->query("SELECT * FROM categories ORDER BY id DESC");
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$categories = $stmt->fetchAll();
 ?>
 
          

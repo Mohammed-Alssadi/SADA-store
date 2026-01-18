@@ -7,9 +7,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
 include("../include/db_connect.php");
 include("header.php");
 
-/* =======================
-   Initial State
-======================= */
 $message = '';
 $messageType = '';
 $errors = [];
@@ -26,16 +23,14 @@ $user = [
     'roll_id' => 2
 ];
 
-/* =======================
-   EDIT MODE (GET)
-======================= */
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $editing = true;
-    $uid = (int)$_GET['id'];
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE id = ? LIMIT 1");
-    $stmt->execute([$uid]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+if (isset($_GET['id']) ) {
+    $editing = true;
+    
+
+    $stmt = $conn->prepare("SELECT * FROM users WHERE id = ? ");
+    $stmt->execute([$_GET['id']]);
+    $row = $stmt->fetch();
 
     if ($row) {
         $user = $row;
@@ -45,12 +40,10 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     }
 }
 
-/* =======================
-   ADD / UPDATE (POST)
-======================= */
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $uid      = isset($_POST['id']) ? (int)$_POST['id'] : null;
+    $uid      = isset($_POST['id']) ? $_POST['id'] : null;
     $fullname = trim($_POST['fullname'] ?? '');
     $username = trim($_POST['username'] ?? '');
     $email    = trim($_POST['email'] ?? '');
@@ -59,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status   = isset($_POST['status']) ? (int)$_POST['status'] : 1;
     $roll_id  = isset($_POST['roll_id']) ? (int)$_POST['roll_id'] : 2;
 
-    /* ========= Validation ========= */
+    
     if ($fullname === '') $errors[] = 'الاسم الكامل مطلوب';
     if ($username === '') $errors[] = 'اسم المستخدم مطلوب';
 
@@ -71,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
     }
 
-    /* ========= Image Upload ========= */
+   
     $profile_image = $user['profile_image'] ?? '';
 
     if (!empty($_FILES['profile_image']['name'])) {
@@ -99,12 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    /* ========= INSERT / UPDATE ========= */
+
     if (empty($errors)) {
         try {
 
             if ($uid) {
-                // UPDATE
+                
                 if ($password !== '') {
                     $hashed = password_hash($password, PASSWORD_DEFAULT);
                     $sql = "UPDATE users SET 
@@ -130,10 +123,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt = $conn->prepare("SELECT * FROM users WHERE id=?");
                 $stmt->execute([$uid]);
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                $user = $stmt->fetch();
 
             } else {
-                // INSERT
+              
                 $hashed = password_hash($password, PASSWORD_DEFAULT);
                 $sql = "INSERT INTO users 
                         (fullname, username, email, password, country, profile_image, status, roll_id)
@@ -158,9 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!-- =======================
-     HTML FORM
-======================= -->
 
 <div class="dashboard-container p-4">
 <div class="container-fluid">
@@ -216,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <select name="roll_id" class="form-select">
 <option value="1" <?= $user['roll_id']==1?'selected':'' ?>>Admin</option>
 <option value="2" <?= $user['roll_id']==2?'selected':'' ?>>Customer</option>
-
+<option value="3" <?= $user['roll_id']==3?'selected':'' ?>>Vendor</option>
 </select>
 </div>
 
@@ -229,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 </div>
 
-<button data-key="save" class="btn btn-primary text-light px-5"><?= $editing ? 'تحديث' : 'حفظ' ?></button>
+<button data-key="save" class="btn btn-primary px-5"><?= $editing ? 'تحديث' : 'حفظ' ?></button>
 
 </form>
 </div>

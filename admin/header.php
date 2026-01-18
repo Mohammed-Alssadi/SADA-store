@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SADA Dashboard</title>
@@ -74,18 +73,20 @@
                             <span class="nav-text" data-i18n="customers">العملاء</span>
                         </div>
                     </a>
-                    <a href="comments.php">
-                    <div class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'comments.php') ? 'active' : ''; ?>">
+                      <a href="comments.php">
+                    <div class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'messages.php') ? 'active' : ''; ?>">
+                      
                             <i class="fas fa-envelope"></i>
-                            <span class="nav-text" data-i18n="Reviws">Reviews</span>
-                        </div>
-                    </a>
+                            <span class="nav-text" data-i18n="reviews">التعليقات</span>
+                       
+                    </div>
+                     </a>
              
-                    <!-- <a href="../settings.php">
+                    <a href="../settings.php">
                     <div class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'settings.php') ? 'active' : ''; ?>">
                             <i class="fas fa-cog"></i>
                             <span class="nav-text" data-i18n="settings">الإعدادات</span>
-                        </a> -->
+                        </a>
                 
             
             </nav>
@@ -175,15 +176,14 @@
 
                     <!-- User Profile -->
                     <div class="header-icon-group">
-                        
                         <button class="header-icon user-profile-btn" id="userProfileBtn">
-                         <img src="../uploads/users/<?php echo htmlspecialchars($_SESSION['profile_image'] ?: ''); ?>" alt="User" class="user-avatar-large">
+                                <img src="../uploads/users/<?php echo $_SESSION['profile_image']; ?>" alt="User" class="user-avatar-large">
                         </button>
                         <div class="dropdown-menu user-menu" id="userMenu">
                             <div class="user-info">
-                                <img src="../uploads/users/<?php echo htmlspecialchars($_SESSION['profile_image'] ?: ''); ?>" alt="User" class="user-avatar-large">
+                                <img src="../uploads/users/<?php echo $_SESSION['profile_image']; ?>" alt="User" class="user-avatar-large">
                                 <div class="user-details">
-                                    <h6>جون دو</h6>
+                                    <h6><?php echo $_SESSION['usename']; ?></h6>
                                     <p>مسؤول</p>
                                 </div>
                             </div>

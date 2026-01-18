@@ -42,14 +42,14 @@ try {
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
-                                        <img src="../uploads/users/<?php echo !empty($user['profile_image']) ? htmlspecialchars($user['profile_image']) : 'user.png'; ?>"
+                                        <img src="../uploads/users/<?php echo !empty($user['profile_image']) ? ($user['profile_image']) : 'user.png'; ?>"
                                             class="customer-avatar" alt="User"
                                             style="width: 40px; height: 40px; border-radius: 50%;">
-                                        <span class="fw-bold"><?php echo htmlspecialchars($user['fullname']); ?></span>
+                                        <span class="fw-bold"><?php echo ($user['fullname']); ?></span>
                                     </div>
                                 </td>
-                                <td><?php echo htmlspecialchars($user['email']); ?></td>
-                                <td><?php echo htmlspecialchars($user['country']); ?></td>
+                                <td><?php echo ($user['email']); ?></td>
+                                <td><?php echo ($user['country']); ?></td>
                                 <td>
                                     <?php if ($user['status'] == 1): ?>
                                     <span class="status-badge status-active" data-key="statusActive">نشط</span>

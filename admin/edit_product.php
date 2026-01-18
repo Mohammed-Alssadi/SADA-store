@@ -17,9 +17,8 @@ $id = intval($_GET['id']);
 
 try {
     $stmt = $conn->prepare('SELECT * FROM products WHERE id = :id');
-    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-    $stmt->execute();
-    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt->execute(array(':id' => $id));
+    $product = $stmt->fetch();
     if (!$product) {
         die('Product not found');
     }
@@ -27,7 +26,6 @@ try {
     die('Database error: ' . htmlspecialchars($e->getMessage()));
 }
 
-/* تحديث المنتج */
 if (isset($_POST['update_product'])) {
 
     $name   = trim($_POST['product_name']);

@@ -16,17 +16,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['roll_id'] != 1) {
         $status      = (int) $_POST['status'];
         $category_id = (int) $_POST['category'];
 
-        /* ===============================
-       2️⃣ إعداد مجلد الرفع
-    =============================== */
+
         $uploadDir = "../uploads/products/";
         if (! is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }
 
-        /* ===============================
-       3️⃣ دالة رفع الصور
-    =============================== */
+
         function uploadImage(array $file, string $path): ?string
         {
             if (empty($file['name'])) {
@@ -77,12 +73,10 @@ if ($success) {
 ?>
 
  <?php include ("header.php"); ?>
-    <!-- Page Content -->
     <div class="dashboard-container p-4">
         <div class="container-fluid">
             <div class="page-header">
                 <h4 data-key="pageTitle">إضافة سلعة جديدة</h4>
-                <!-- <p data-key="pageSubtitle">قم بتعبئة البيانات أدناه لإضافة منتج جديد إلى المتجر</p> -->
             </div>
 
             <div class="form-card">
